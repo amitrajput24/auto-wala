@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="hi">
 <head>
@@ -8,6 +9,7 @@
 <style>
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html{
@@ -20,10 +22,11 @@ body{
   color:#fff;
   font-family:Arial,"Noto Sans Devanagari",sans-serif;
   background:
-    radial-gradient(circle at 50% 20%,#376da0 0,#1d4775 30%,transparent 55%),
-    linear-gradient(180deg,#102d52,#214f7d 50%,#a9362a 78%,#59191e);
+    radial-gradient(circle at 50% 8%,#3d79ad 0,#214e7e 27%,transparent 54%),
+    radial-gradient(circle at 85% 75%,#8e302b 0,transparent 34%),
+    linear-gradient(180deg,#0b2545 0%,#173e69 45%,#542326 100%);
   overflow-x:hidden;
-  padding-bottom:150px;
+  padding-bottom:155px;
 }
 
 body:before{
@@ -31,11 +34,13 @@ body:before{
   position:fixed;
   inset:0;
   pointer-events:none;
+  z-index:-1;
   background:
-    radial-gradient(circle at 20% 10%,#ffffff12 0 2px,transparent 3px),
-    radial-gradient(circle at 80% 30%,#ffffff0d 0 2px,transparent 3px);
-  background-size:80px 80px;
-  opacity:.5;
+    radial-gradient(circle at 15% 12%,#ffffff10 0 1px,transparent 2px),
+    radial-gradient(circle at 80% 28%,#ffffff0c 0 1px,transparent 2px),
+    radial-gradient(circle at 35% 70%,#ffffff08 0 1px,transparent 2px);
+  background-size:95px 95px,120px 120px,150px 150px;
+  opacity:.7;
 }
 
 /* HEADER */
@@ -43,16 +48,22 @@ body:before{
 header{
   position:relative;
   z-index:10;
+  height:68px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:20px 24px;
-  font-weight:700;
+  padding:0 24px;
+  border-bottom:1px solid #ffffff0d;
+  background:#071b3270;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
 }
 
 .clock{
-  font-size:14px;
+  font-size:13px;
+  font-weight:700;
   font-variant-numeric:tabular-nums;
+  opacity:.9;
 }
 
 .live{
@@ -60,48 +71,57 @@ header{
   left:50%;
   transform:translateX(-50%);
   white-space:nowrap;
-  font-size:14px;
+  font-size:13px;
+  color:#f4f8ff;
+  opacity:.9;
 }
 
 .dot{
   display:inline-block;
-  width:10px;
-  height:10px;
+  width:8px;
+  height:8px;
   margin-right:7px;
   border-radius:50%;
   background:#43e779;
-  box-shadow:0 0 12px #43e779;
+  box-shadow:0 0 0 4px #43e77918,0 0 16px #43e779;
   animation:pulse 1.5s infinite;
 }
 
 @keyframes pulse{
   0%,100%{opacity:1;transform:scale(1)}
-  50%{opacity:.45;transform:scale(.75)}
+  50%{opacity:.45;transform:scale(.78)}
 }
 
-/* HERO */
+/* HERO TITLE */
 
 .heroTitle{
   text-align:center;
   margin-top:45px;
+  padding:0 15px;
 }
 
 .heroTitle h1{
   margin:0;
   font-size:clamp(55px,10vw,100px);
+  line-height:.95;
   font-weight:1000;
-  letter-spacing:-4px;
-  text-shadow:0 8px 25px #0007;
+  letter-spacing:-5px;
+  text-shadow:
+    0 8px 25px #0009,
+    0 0 45px #ffffff12;
 }
 
 .heroTitle p{
-  margin:8px 0 0;
-  font-size:16px;
-  opacity:.8;
+  margin:13px 0 0;
+  font-size:15px;
+  opacity:.72;
+  letter-spacing:.3px;
 }
 
+/* AUTO HERO */
+
 .hero{
-  height:390px;
+  height:380px;
   position:relative;
   display:flex;
   justify-content:center;
@@ -113,13 +133,15 @@ header{
   width:520px;
   height:260px;
   transform:scale(.9);
-  filter:drop-shadow(0 25px 25px #0009);
+  filter:
+    drop-shadow(0 25px 25px #0009)
+    drop-shadow(0 0 35px #f29b3515);
   animation:floatAuto 4s ease-in-out infinite;
 }
 
 @keyframes floatAuto{
   0%,100%{transform:translateY(0) scale(.9)}
-  50%{transform:translateY(-8px) scale(.9)}
+  50%{transform:translateY(-9px) scale(.9)}
 }
 
 .roof{
@@ -128,10 +150,11 @@ header{
   top:10px;
   width:220px;
   height:105px;
-  background:#d68c2c;
-  border:5px solid #efad45;
+  background:linear-gradient(135deg,#e4a13d,#bd7121);
+  border:5px solid #f4b957;
   border-bottom:0;
   border-radius:25px;
+  box-shadow:inset 0 5px 12px #fff2;
 }
 
 .cab{
@@ -140,9 +163,10 @@ header{
   top:80px;
   width:300px;
   height:130px;
-  background:#17201d;
-  border:5px solid #28302c;
+  background:linear-gradient(145deg,#202a26,#101514);
+  border:5px solid #303934;
   border-radius:10px 35px 18px 8px;
+  box-shadow:inset 0 10px 25px #ffffff08;
 }
 
 .win{
@@ -150,8 +174,9 @@ header{
   top:95px;
   width:82px;
   height:60px;
-  background:linear-gradient(135deg,#578b9d,#294854);
+  background:linear-gradient(135deg,#6da7ba,#294954);
   border:4px solid #101919;
+  box-shadow:inset 0 0 18px #ffffff12;
 }
 
 .w1{left:185px}
@@ -163,7 +188,7 @@ header{
   top:80px;
   width:145px;
   height:130px;
-  background:#b84a23;
+  background:linear-gradient(145deg,#c85829,#96351e);
   border:5px solid #7d2c1c;
   border-radius:20px 35px 15px 5px;
 }
@@ -174,8 +199,9 @@ header{
   top:145px;
   width:440px;
   height:85px;
-  background:#111716;
+  background:linear-gradient(180deg,#151b19,#080b0a);
   border-radius:6px 20px 20px 30px;
+  box-shadow:inset 0 8px 15px #ffffff08;
 }
 
 .wheel{
@@ -186,7 +212,9 @@ header{
   border-radius:50%;
   background:#080909;
   border:12px solid #292929;
-  box-shadow:inset 0 0 0 4px #111;
+  box-shadow:
+    inset 0 0 0 4px #111,
+    0 8px 15px #0008;
 }
 
 .a{left:85px}
@@ -194,47 +222,66 @@ header{
 
 .tag{
   position:absolute;
-  bottom:10px;
+  bottom:8px;
   left:0;
   right:0;
   text-align:center;
-  font-size:20px;
+  font-size:18px;
   font-weight:800;
-  text-shadow:0 3px 8px #000;
+  color:#fff;
+  text-shadow:0 3px 10px #000;
+  opacity:.9;
 }
 
 /* SEARCH */
 
 .searchBox{
   width:min(760px,92%);
-  margin:0 auto 25px;
+  margin:0 auto 28px;
   position:relative;
 }
 
 .searchBox input{
   width:100%;
-  padding:16px 20px 16px 48px;
-  border:1px solid #ffffff25;
-  border-radius:18px;
+  padding:17px 20px 17px 52px;
+  border:1px solid #ffffff20;
+  border-radius:20px;
   outline:none;
   color:#fff;
-  background:#ffffff12;
-  backdrop-filter:blur(15px);
+  background:#ffffff0e;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
   font-size:15px;
+  box-shadow:
+    0 15px 35px #00018,
+    inset 0 1px #fff1;
+  transition:.25s;
+}
+
+.searchBox input:focus{
+  border-color:#ffffff45;
+  background:#ffffff14;
+  box-shadow:
+    0 15px 40px #00025,
+    0 0 0 4px #ffffff08,
+    inset 0 1px #fff2;
 }
 
 .searchBox input::placeholder{
-  color:#ffffff99;
+  color:#ffffff88;
 }
 
 .searchIcon{
   position:absolute;
-  left:17px;
-  top:14px;
-  font-size:20px;
+  left:18px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:19px;
+  opacity:.8;
+  pointer-events:none;
 }
 
-/* SONG LIST */
+/* SONG SECTION */
 
 .section{
   width:min(760px,92%);
@@ -245,52 +292,89 @@ header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin:18px 0 10px;
+  margin:18px 0 12px;
+  padding:0 3px;
 }
 
 .sectionTitle h2{
   margin:0;
-  font-size:22px;
+  font-size:21px;
+  letter-spacing:-.3px;
 }
 
 .sectionTitle span{
-  font-size:12px;
-  opacity:.65;
+  padding:6px 10px;
+  border:1px solid #ffffff14;
+  border-radius:999px;
+  background:#ffffff08;
+  font-size:11px;
+  opacity:.7;
 }
 
+/* SONG CARD */
+
 .song{
+  position:relative;
   display:flex;
   align-items:center;
   gap:14px;
-  padding:13px;
-  margin:9px 0;
+  padding:12px;
+  margin:10px 0;
   border:1px solid #ffffff12;
-  border-radius:18px;
-  background:#24191c88;
-  backdrop-filter:blur(12px);
+  border-radius:20px;
+  background:
+    linear-gradient(135deg,#ffffff0c,#ffffff04),
+    #171a1c80;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
   cursor:pointer;
-  transition:.22s;
+  transition:
+    transform .22s ease,
+    background .22s ease,
+    border-color .22s ease,
+    box-shadow .22s ease;
+  box-shadow:0 8px 25px #00015;
+}
+
+.song:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(120deg,#ffffff09,transparent 35%);
 }
 
 .song:hover{
   transform:translateY(-3px);
-  background:#ffffff14;
-  border-color:#ffffff25;
+  background:
+    linear-gradient(135deg,#ffffff14,#ffffff06),
+    #171a1c95;
+  border-color:#ffffff28;
+  box-shadow:0 15px 35px #00028;
+}
+
+.song:active{
+  transform:scale(.985);
 }
 
 .cover{
-  width:54px;
-  height:54px;
+  width:55px;
+  height:55px;
   flex:none;
-  border-radius:50%;
+  border-radius:16px;
   background:
     radial-gradient(circle,#f1c55d 0 18%,#3b2810 19% 40%,#d18c29 41% 47%,#17100a 48% 70%,#8c5c1b 71%);
-  box-shadow:0 5px 15px #0006;
+  box-shadow:
+    0 7px 17px #0007,
+    inset 0 1px #fff3;
 }
 
 .meta{
   flex:1;
   min-width:0;
+  position:relative;
+  z-index:1;
 }
 
 .title{
@@ -298,12 +382,16 @@ header{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  font-size:15px;
 }
 
 .artist{
-  margin-top:4px;
-  font-size:13px;
-  opacity:.65;
+  margin-top:5px;
+  font-size:12px;
+  opacity:.58;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .playBtn,
@@ -314,16 +402,31 @@ header{
   border:0;
   border-radius:50%;
   cursor:pointer;
+  transition:.2s;
+  position:relative;
+  z-index:2;
 }
 
 .playBtn{
   background:#fff;
   color:#111;
+  box-shadow:0 5px 15px #0004;
+}
+
+.playBtn:hover{
+  transform:scale(1.08);
+  box-shadow:0 7px 20px #0006;
 }
 
 .favBtn{
-  background:#ffffff10;
+  background:#ffffff0d;
   color:#fff;
+  border:1px solid #ffffff0c;
+}
+
+.favBtn:hover{
+  background:#ffffff18;
+  transform:scale(1.06);
 }
 
 /* PLAYER */
@@ -334,29 +437,28 @@ header{
   bottom:15px;
   transform:translateX(-50%);
   z-index:20;
-
-  width:min(700px,94%);
-
+  width:min(720px,94%);
   display:flex;
   align-items:center;
   gap:12px;
-
-  padding:11px 15px;
-
+  padding:11px 14px;
   border:1px solid #ffffff25;
-  border-radius:30px;
-
-  background:#3c1c1ddd;
-  backdrop-filter:blur(20px);
-
+  border-radius:27px;
+  background:
+    linear-gradient(135deg,#ffffff0c,#ffffff03),
+    #26151bdd;
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px);
   box-shadow:
-    0 20px 50px #0008,
+    0 20px 55px #0009,
+    0 0 35px #0003,
     inset 0 1px #fff2;
 }
 
 .player .cover{
   width:54px;
   height:54px;
+  border-radius:15px;
 }
 
 .playerInfo{
@@ -369,17 +471,18 @@ header{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  font-size:14px;
 }
 
 .playerArtist{
-  font-size:12px;
-  opacity:.6;
+  font-size:11px;
+  opacity:.58;
   margin-top:3px;
 }
 
 audio{
   width:100%;
-  height:32px;
+  height:31px;
   margin-top:4px;
 }
 
@@ -390,23 +493,32 @@ audio{
 }
 
 .controls button{
+  width:36px;
+  height:36px;
   border:0;
   background:transparent;
   color:#fff;
   font-size:22px;
   cursor:pointer;
+  border-radius:50%;
+  transition:.18s;
+}
+
+.controls button:hover{
+  background:#ffffff10;
 }
 
 .mainBtn{
-  width:43px;
-  height:43px;
-  border-radius:50%;
+  width:43px!important;
+  height:43px!important;
+  border-radius:50%!important;
   background:#fff!important;
   color:#111!important;
   font-size:17px!important;
+  box-shadow:0 6px 18px #0005;
 }
 
-/* EXTRA */
+/* EXTRA BUTTONS */
 
 .horn{
   position:fixed;
@@ -414,12 +526,19 @@ audio{
   bottom:125px;
   z-index:15;
   padding:10px 15px;
-  border:1px solid #ffffff25;
+  border:1px solid #ffffff20;
   border-radius:15px;
   color:#fff;
   background:#173d7380;
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
   cursor:pointer;
+  transition:.2s;
+}
+
+.horn:hover{
+  background:#ffffff15;
+  transform:translateY(-2px);
 }
 
 .onlineBox{
@@ -428,16 +547,22 @@ audio{
   bottom:125px;
   z-index:15;
   padding:10px 14px;
-  border:1px solid #ffffff25;
+  border:1px solid #ffffff20;
   border-radius:15px;
   background:#173d7380;
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
   font-size:12px;
+  box-shadow:0 8px 25px #0002;
 }
 
 .empty{
   text-align:center;
-  padding:30px;
+  padding:35px 20px;
+  margin-top:10px;
+  border:1px dashed #ffffff18;
+  border-radius:20px;
+  background:#ffffff05;
   opacity:.6;
 }
 
@@ -445,12 +570,17 @@ audio{
 
 @media(max-width:600px){
 
+  body{
+    padding-bottom:130px;
+  }
+
   header{
-    padding:15px 12px;
+    height:58px;
+    padding:0 12px;
   }
 
   .clock{
-    font-size:11px;
+    font-size:10px;
   }
 
   .live{
@@ -462,61 +592,122 @@ audio{
   }
 
   .heroTitle{
-    margin-top:55px;
+    margin-top:43px;
   }
 
   .heroTitle h1{
     font-size:58px;
-    letter-spacing:-3px;
+    letter-spacing:-4px;
   }
 
   .heroTitle p{
-    font-size:13px;
+    font-size:12px;
+    margin-top:10px;
   }
 
   .hero{
-    height:330px;
+    height:320px;
   }
 
   .auto{
-    transform:scale(.67);
+    transform:scale(.66);
   }
 
   @keyframes floatAuto{
-    0%,100%{transform:translateY(0) scale(.67)}
-    50%{transform:translateY(-7px) scale(.67)}
+    0%,100%{transform:translateY(0) scale(.66)}
+    50%{transform:translateY(-7px) scale(.66)}
   }
 
   .tag{
-    font-size:16px;
+    bottom:7px;
+    font-size:14px;
   }
 
   .searchBox{
+    width:calc(100% - 24px);
     margin-bottom:20px;
   }
 
+  .searchBox input{
+    padding:15px 16px 15px 47px;
+    border-radius:17px;
+    font-size:14px;
+  }
+
+  .section{
+    width:calc(100% - 24px);
+  }
+
+  .sectionTitle{
+    margin:15px 0 9px;
+  }
+
+  .sectionTitle h2{
+    font-size:19px;
+  }
+
+  .sectionTitle span{
+    font-size:10px;
+    padding:5px 9px;
+  }
+
   .song{
-    padding:10px;
+    gap:11px;
+    padding:9px;
+    margin:8px 0;
+    border-radius:17px;
   }
 
   .cover{
     width:48px;
     height:48px;
+    border-radius:14px;
+  }
+
+  .title{
+    font-size:14px;
+  }
+
+  .artist{
+    font-size:11px;
+    margin-top:4px;
   }
 
   .favBtn{
     display:none;
   }
 
+  .playBtn{
+    width:37px;
+    height:37px;
+    font-size:13px;
+  }
+
   .player{
-    bottom:7px;
-    padding:8px 10px;
-    border-radius:25px;
+    width:calc(100% - 12px);
+    bottom:6px;
+    gap:8px;
+    padding:8px;
+    border-radius:21px;
   }
 
   .player .cover{
-    width:43px;
-    height:43px;
+    width:42px;
+    height:42px;
+    border-radius:12px;
+  }
+
+  .playerTitle{
+    font-size:12px;
+  }
+
+  .playerArtist{
+    font-size:10px;
+  }
+
+  audio{
+    height:27px;
+    margin-top:2px;
   }
 
   .controls{
@@ -524,24 +715,66 @@ audio{
   }
 
   .controls button{
+    width:31px;
+    height:31px;
     font-size:18px;
   }
 
   .mainBtn{
-    width:38px;
-    height:38px;
+    width:37px!important;
+    height:37px!important;
+    font-size:15px!important;
   }
 
   .horn{
-    bottom:105px;
+    bottom:98px;
     left:8px;
-    font-size:11px;
+    padding:8px 11px;
+    font-size:10px;
+    border-radius:12px;
   }
 
   .onlineBox{
-    bottom:105px;
+    bottom:98px;
     right:8px;
+    padding:8px 10px;
     font-size:10px;
+    border-radius:12px;
+  }
+}
+
+/* VERY SMALL PHONES */
+
+@media(max-width:380px){
+
+  .heroTitle h1{
+    font-size:50px;
+  }
+
+  .hero{
+    height:295px;
+  }
+
+  .auto{
+    transform:scale(.59);
+  }
+
+  @keyframes floatAuto{
+    0%,100%{transform:translateY(0) scale(.59)}
+    50%{transform:translateY(-6px) scale(.59)}
+  }
+
+  .playerArtist{
+    display:none;
+  }
+
+  .controls button{
+    width:28px;
+  }
+
+  .mainBtn{
+    width:35px!important;
+    height:35px!important;
   }
 }
 </style>
@@ -912,7 +1145,6 @@ function render(){
           }
         ></div>
 
-
         <div class="meta">
 
           <div class="title">
@@ -925,14 +1157,12 @@ function render(){
 
         </div>
 
-
         <button
           class="favBtn"
           onclick="event.stopPropagation();favorite('${song.id}')"
         >
           ♡
         </button>
-
 
         <button
           class="playBtn"
@@ -963,7 +1193,6 @@ document
       .trim()
       .toLowerCase();
 
-
     filteredSongs=
     songs.filter(
       song=>
@@ -975,7 +1204,6 @@ document
           .toLowerCase()
           .includes(query)
     );
-
 
     render();
 
@@ -992,28 +1220,23 @@ async function play(i){
   )
     return;
 
-
   const song=
   filteredSongs[i];
 
   idx=i;
 
-
   audio.src=
     song.audio;
-
 
   document.getElementById(
     "ptitle"
   ).textContent=
     song.title;
 
-
   document.getElementById(
     "partist"
   ).textContent=
     song.artist;
-
 
   document.getElementById(
     "pcover"
@@ -1023,7 +1246,6 @@ async function play(i){
     `url('${song.cover}') center/cover`
     :
     "";
-
 
   try{
 
@@ -1094,12 +1316,10 @@ function next(){
   )
     return;
 
-
   idx=
     (idx+1)
     %
     filteredSongs.length;
-
 
   play(idx);
 
@@ -1115,13 +1335,11 @@ function prev(){
   )
     return;
 
-
   idx=
     (idx-1+
       filteredSongs.length)
     %
     filteredSongs.length;
-
 
   play(idx);
 
@@ -1162,7 +1380,6 @@ function favorite(id){
       "[]"
     );
 
-
   if(
     favorites.includes(id)
   ){
@@ -1177,7 +1394,6 @@ function favorite(id){
     favorites.push(id);
 
   }
-
 
   localStorage.setItem(
     "autoWalaFavorites",
@@ -1230,3 +1446,4 @@ load();
 
 </body>
 </html>
+```
