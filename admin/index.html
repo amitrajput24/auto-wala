@@ -73,67 +73,65 @@ async function loadSongs(){
   });
 }
 
-document.getElementById("uploadForm").addEventListener("submit",async function(e){
+document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+
   e.preventDefault();
 
-  const message=document.getElementById("message");
-  message.innerText="Uploading...";
+  const message = document.getElementById("message");
+  const files = document.getElementById("audio").files;
 
-  const fd=new FormData();
+  if (!files.length) {
+    message.innerText = "❌ Please select MP3 files";
+    return;
+  }
 
-  fd.append("title",document.getElementById("title").value);
-  fd.append("artist",document.getElementById("artist").value);
-  fd.append("audio",document.getElementById("audio").files[0]);
+  message.innerText = "Uploading " + files.length + " songs...";
 
-  const cover=document.getElementById("cover").files[0];
-  if(cover) fd.append("cover",cover);
+  const fd = new FormData();
 
-  try{
-    const response=await fetch("/api/songs",{
-      method:"POST",
-      headers:{
-        "Authorization":"Bearer "+token
+  for (const file of files) {
+    fd.append("audio", file);
+  }
+
+  const artist = document.getElementById("artist").value;
+
+  if (artist) {
+    fd.append("artist", artist);
+  }
+
+  const cover = document.getElementById("cover").files[0];
+
+  if (cover) {
+    fd.append("cover", cover);
+  }
+
+  try {
+
+    const response = await fetch("/api/songs", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + token
       },
-      body:fd
+      body: fd
     });
 
-    const data=await response.json();
+    const data = await response.json();
 
-    if(!response.ok) throw new Error(data.error||"Upload failed");
+    if (!response.ok) {
+      throw new Error(data.error || "Upload failed");
+    }
 
-    message.innerText="✅ Song uploaded successfully!";
+    message.innerText =
+      "✅ " + data.count + " songs uploaded successfully!";
+
     document.getElementById("uploadForm").reset();
+
     loadSongs();
 
-  }catch(error){
-    message.innerText="❌ "+error.message;
+  } catch (error) {
+
+    message.innerText = "❌ " + error.message;
+
   }
+
 });
-
-async function deleteSong(id){
-  if(!confirm("Delete this song?")) return;
-
-  const response=await fetch("/api/songs/"+id,{
-    method:"DELETE",
-    headers:{
-      "Authorization":"Bearer "+token
-    }
-  });
-
-  const data=await response.json();
-
-  if(data.ok) loadSongs();
-  else alert(data.error||"Delete failed");
-}
-
-function escapeHtml(text){
-  const div=document.createElement("div");
-  div.textContent=text||"";
-  return div.innerHTML;
-}
-
-loadSongs();
-</script>
-
-</body>
-</html>
