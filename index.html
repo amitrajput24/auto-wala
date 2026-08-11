@@ -723,13 +723,13 @@ header{
 
   padding:11px 14px;
 
-  border:1px solid #ffffff25;
+  border:1px solid #ffffff2b;
 
   border-radius:27px;
 
   background:
-    linear-gradient(135deg,#ffffff0d,#ffffff03),
-    #20191ddd;
+    linear-gradient(135deg,#ffffff12,#ffffff04),
+    #17151cdd;
 
   backdrop-filter:blur(25px);
   -webkit-backdrop-filter:blur(25px);
@@ -737,12 +737,40 @@ header{
   box-shadow:
     0 20px 55px #0009,
     0 0 35px #0003,
-    inset 0 1px #fff2;
+    inset 0 1px #fff3;
+
+  transition:
+    box-shadow .25s ease,
+    border-color .25s ease,
+    transform .25s ease;
+}
+
+.player.active{
+  border-color:#ffffff35;
+
+  box-shadow:
+    0 20px 55px #0009,
+    0 0 35px #ffffff0c,
+    inset 0 1px #fff3;
 }
 
 .player .cover{
   width:54px;
   height:54px;
+
+  flex:none;
+
+  border:1px solid #ffffff25;
+  box-shadow:0 7px 20px #0006;
+
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease;
+}
+
+.player.active .cover{
+  transform:scale(1.035);
+  box-shadow:0 8px 24px #0007,0 0 18px #ffffff0a;
 }
 
 .playerInfo{
@@ -778,6 +806,11 @@ audio{
   display:flex;
   align-items:center;
   gap:5px;
+
+  padding:4px;
+  border:1px solid #ffffff12;
+  border-radius:24px;
+  background:#ffffff05;
 }
 
 .controls button{
@@ -796,11 +829,18 @@ audio{
 
   border-radius:50%;
 
-  transition:.18s;
+  transition:
+    transform .18s ease,
+    background .18s ease;
 }
 
 .controls button:hover{
-  background:#ffffff10;
+  background:#ffffff12;
+  transform:scale(1.06);
+}
+
+.controls button:active{
+  transform:scale(.94);
 }
 
 .mainBtn{
@@ -816,6 +856,15 @@ audio{
   font-size:17px!important;
 
   box-shadow:0 6px 18px #0005;
+
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+.mainBtn:hover{
+  transform:scale(1.06);
+  box-shadow:0 8px 22px #0007;
 }
 
 .player.active{
