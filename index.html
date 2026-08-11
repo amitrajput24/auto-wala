@@ -1935,7 +1935,7 @@ audio{
   <div class="rideJourney" aria-label="Current ride">
     <div class="rideJourneyLabel">CURRENT DESTINATION</div>
     <div class="rideDestination" id="rideDestination">India Gate</div>
-    <div class="rideJourneyMeta"><span id="rideTimer">00:00</span><span id="rideDistance">0.0 km</span></div>
+    <div class="rideJourneyMeta"><span id="rideDistance">0.0 km</span></div>
     <div class="rideProgress" aria-label="Ride progress"><i id="rideProgressFill"></i></div>
   </div>
 
@@ -1945,7 +1945,6 @@ audio{
       <h3>Ride Complete!</h3>
       <p id="rideCompleteText">Safar mast raha 🚕🎵</p>
       <div class="rideStats">
-        <div class="rideStat"><b id="rideCompleteTime">00:00</b><span>RIDE TIME</span></div>
         <div class="rideStat"><b id="rideCompleteDistance">0.0 km</b><span>DISTANCE</span></div>
       </div>
       <button class="rideFinishBtn" id="rideFinishBtn" type="button">Ride Again 🚕</button>
@@ -2749,11 +2748,9 @@ setRideMood(savedRideMood);
 
 /* RIDE JOURNEY — STEP 5 */
 const rideDestination=document.getElementById("rideDestination");
-const rideTimer=document.getElementById("rideTimer");
 const rideDistance=document.getElementById("rideDistance");
 const rideProgressFill=document.getElementById("rideProgressFill");
 const rideComplete=document.getElementById("rideComplete");
-const rideCompleteTime=document.getElementById("rideCompleteTime");
 const rideCompleteDistance=document.getElementById("rideCompleteDistance");
 const rideCompleteText=document.getElementById("rideCompleteText");
 const rideFinishBtn=document.getElementById("rideFinishBtn");
@@ -2776,7 +2773,6 @@ function pickRideDestination(){
 function resetRideJourney(){
   pickRideDestination();
   rideJourneyStart=performance.now();
-  rideTimer.textContent="00:00";
   rideProgressFill.style.width="0%";
   rideComplete.classList.remove("show");
   rideComplete.setAttribute("aria-hidden","true");
@@ -2791,12 +2787,8 @@ function updateRideJourney(now){
 
   const elapsed=Math.max(0,now-rideJourneyStart);
   const progress=Math.min(1,elapsed/rideJourneyDuration);
-  const seconds=Math.floor(elapsed/1000);
-  const mm=String(Math.floor(seconds/60)).padStart(2,"0");
-  const ss=String(seconds%60).padStart(2,"0");
   const km=(rideJourneyDistance*progress).toFixed(1);
 
-  rideTimer.textContent=mm+":"+ss;
   rideDistance.textContent=km+" km";
   rideProgressFill.style.width=(progress*100).toFixed(1)+"%";
 
@@ -2820,7 +2812,6 @@ function finishRideJourney(){
   rideOverlay.classList.add("journeyComplete");
   rideComplete.classList.add("show");
   rideComplete.setAttribute("aria-hidden","false");
-  rideCompleteTime.textContent=rideTimer.textContent;
   rideCompleteDistance.textContent=rideJourneyDistance.toFixed(1)+" km";
   rideCompleteText.textContent=""+rideDestination.textContent+" tak safar complete 🚕🎵";
 }
