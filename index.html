@@ -153,7 +153,7 @@ header{
 }
 
 
-/* AUTO HERO */
+/* AUTO */
 
 .hero{
   height:380px;
@@ -747,7 +747,7 @@ audio{
 }
 
 
-/* EXTRA BUTTONS */
+/* EXTRA */
 
 .horn{
   position:fixed;
@@ -861,7 +861,6 @@ audio{
     margin-top:10px;
   }
 
-  /* COMPACT MOBILE HERO */
   .hero{
     height:220px !important;
   }
@@ -1040,7 +1039,7 @@ audio{
 }
 
 
-/* VERY SMALL PHONES */
+/* SMALL PHONES */
 
 @media(max-width:380px){
 
@@ -1085,6 +1084,7 @@ audio{
 
 
 <body>
+
 
 <header>
 
@@ -1145,7 +1145,9 @@ audio{
 
 <div class="searchBox">
 
-  <span class="searchIcon">🔍</span>
+  <span class="searchIcon">
+    🔍
+  </span>
 
   <input
     id="search"
@@ -1238,6 +1240,7 @@ audio{
 
 <script>
 
+
 let songs=[];
 let filteredSongs=[];
 let idx=-1;
@@ -1267,7 +1270,7 @@ localStorage.setItem(
 );
 
 
-/* LIVE CLOCK */
+/* CLOCK */
 
 function updateClock(){
 
@@ -1412,6 +1415,41 @@ async function load(){
 }
 
 
+/* CLEAN SONG TITLE */
+
+function cleanSongTitle(title){
+
+  return String(title || "")
+    .replace(/\.[^/.]+$/, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+}
+
+
+/* HTML ESCAPE */
+
+function esc(text){
+
+  return String(
+    text || ""
+  ).replace(
+    /[&<>"']/g,
+
+    m=>
+      ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+      }[m])
+  );
+
+}
+
+
 /* RENDER */
 
 function render(){
@@ -1464,7 +1502,7 @@ function render(){
         <div class="meta">
 
           <div class="title">
-            ${esc(song.title)}
+            ${esc(cleanSongTitle(song.title))}
           </div>
 
           <div class="artist">
@@ -1549,7 +1587,7 @@ async function play(i){
   document.getElementById(
     "ptitle"
   ).textContent=
-    song.title;
+    cleanSongTitle(song.title);
 
   document.getElementById(
     "partist"
@@ -1730,28 +1768,6 @@ document
     );
   }
 );
-
-
-/* ESCAPE */
-
-function esc(text){
-
-  return String(
-    text || ""
-  ).replace(
-    /[&<>"']/g,
-
-    m=>
-      ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#39;"
-      }[m])
-  );
-
-}
 
 
 load();
