@@ -1,44 +1,785 @@
-const express=require("express"); const path=require("path");
-const multer=require("multer");
-const fs=require("fs");
+const express = require("express");
+const path = require("path");
+const multer = require("multer");
 
-const app=express(); app.use("/admin",express.static(path.join(__dirname,"admin")));
-const PORT=process.env.PORT||3000;
-const ADMIN_PASSWORD=process.env.ADMIN_PASSWORD||"change-this-password";
-const DATA=path.join(__dirname,"data");
-const MUSIC=path.join(DATA,"music");
-fs.mkdirSync(MUSIC,{recursive:true});
-const dbFile=path.join(DATA,"songs.json");
-if(!fs.existsSync(dbFile))fs.writeFileSync(dbFile,"[]");
-const read=()=>JSON.parse(fs.readFileSync(dbFile,"utf8"));
-const write=x=>fs.writeFileSync(dbFile,JSON.stringify(x,null,2));
-const storage=multer.diskStorage({destination:(req,f,cb)=>cb(null,MUSIC),filename:(req,f,cb)=>{
- const ext=path.extname(f.originalname).toLowerCase(); const safe=Date.now()+"-"+Math.random().toString(36).slice(2)+ext; cb(null,safe);
-}});
-const upload=multer({storage,fileFilter:(req,f,cb)=>cb(null,/^audio\/|\.mp3$|\.wav$|\.m4a$|\.ogg$|\.aac$/i.test(f.mimetype+" "+f.originalname))});
+const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
-app.use(express.static(path.join(__dirname,"public"))); app.get("/",(req,res)=>res.sendFile(path.join(__dirname,"index.html")));
-app.use("/music",express.static(MUSIC));
-app.use("/admin",express.static(path.join(__dirname,"admin")));
+const PORT = process.env.PORT || 3000;
 
-function auth(req,res,next){
- const token=req.headers.authorization||"";
- if(token==="Bearer "+ADMIN_PASSWORD)return next();
- res.status(401).json({error:"Unauthorized"});
+const ADMIN_PASSWORD =
+  process.env.ADMIN_PASSWORD || "change-this-password";
+
+const SUPABASE_URL =
+  (process.env.SUPABASE_URL || "").replace(/\/+$/, "");
+
+const SUPABASE_SERVICE_KEY =
+  process.env.SUPABASE_SERVICE_KEY || "";
+
+const SUPABASE_BUCKET = "songs";
+
+/* =========================
+   CHECK ENVIRONMENT
+========================= */
+
+if (!SUPABASE_URL) {
+  console.error("SUPABASE_URL missing");
 }
-app.get("/api/songs",(req,res)=>res.json(read()));
-app.post("/api/login",(req,res)=>res.json({ok:req.body.password===ADMIN_PASSWORD,token:ADMIN_PASSWORD}));
-app.post("/api/songs",auth,upload.fields([{name:"audio",maxCount:1},{name:"cover",maxCount:1}]),(req,res)=>{
- if(!req.files?.audio?.[0])return res.status(400).json({error:"Audio file required"});
- const s={id:Date.now().toString(),title:req.body.title||path.parse(req.files.audio[0].originalname).name,artist:req.body.artist||"Unknown artist",
- audio:"/music/"+req.files.audio[0].filename,cover:req.files.cover?.[0]?"/music/"+req.files.cover[0].filename:"",createdAt:new Date().toISOString()};
- const all=read();all.unshift(s);write(all);res.json(s);
+
+if (!SUPABASE_SERVICE_KEY) {
+  console.error("SUPABASE_SERVICE_KEY missing");
+}
+
+/* =========================
+   EXPRESS
+========================= */
+
+app.use(
+  express.json({
+    limit: "2mb"
+  })
+);
+
+app.use(
+  express.urlencoded({
+    extended: true
+  })
+);
+
+/* =========================
+   STATIC FILES
+========================= */
+
+app.use(
+  express.static(
+    path.join(__dirname, "public")
+  )
+);
+
+app.use(
+  "/admin",
+  express.static(
+    path.join(__dirname, "admin")
+  )
+);
+
+/* =========================
+   HOME
+========================= */
+
+app.get("/", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "index.html")
+  );
 });
-app.delete("/api/songs/:id",auth,(req,res)=>{
- const all=read();const s=all.find(x=>x.id===req.params.id);if(!s)return res.status(404).json({error:"Not found"});
- [s.audio,s.cover].forEach(u=>{if(u){const f=path.join(__dirname,"data",u.replace("/music/","music/"));if(fs.existsSync(f))fs.unlinkSync(f)}});
- write(all.filter(x=>x.id!==req.params.id));res.json({ok:true});
+
+/* =========================
+   MULTER
+========================= */
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+
+  limits: {
+    files: 50,
+    fileSize: 100 * 1024 * 1024
+  },
+
+  fileFilter: (req, file, cb) => {
+    const allowed =
+      /audio\/|\.mp3$|\.wav$|\.m4a$|\.ogg$|\.aac$/i;
+
+    if (
+      allowed.test(
+        file.mimetype + " " + file.originalname
+      )
+    ) {
+      cb(null, true);
+    } else {
+      cb(
+        new Error("Only audio files are allowed")
+      );
+    }
+  }
 });
-app.listen(PORT,()=>console.log("Auto Wala running on http://localhost:"+PORT));
+
+/* =========================
+   SUPABASE REQUEST
+========================= */
+
+async function supabaseRequest(
+  endpoint,
+  options = {}
+) {
+  if (
+    !SUPABASE_URL ||
+    !SUPABASE_SERVICE_KEY
+  ) {
+    throw new Error(
+      "Supabase environment variables are missing"
+    );
+  }
+
+  const response = await fetch(
+    SUPABASE_URL + endpoint,
+    {
+      ...options,
+
+      headers: {
+        apikey: SUPABASE_SERVICE_KEY,
+
+        Authorization:
+          "Bearer " + SUPABASE_SERVICE_KEY,
+
+        ...(options.headers || {})
+      }
+    }
+  );
+
+  const text = await response.text();
+
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
+  }
+
+  if (!response.ok) {
+    console.error(
+      "Supabase error:",
+      response.status,
+      data
+    );
+
+    throw new Error(
+      data?.message ||
+      data?.error_description ||
+      data?.error ||
+      "Supabase request failed"
+    );
+  }
+
+  return data;
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+app.post(
+  "/api/login",
+  (req, res) => {
+    const correct =
+      req.body &&
+      req.body.password === ADMIN_PASSWORD;
+
+    res.json({
+      ok: correct,
+
+      token: correct
+        ? ADMIN_PASSWORD
+        : ""
+    });
+  }
+);
+
+/* =========================
+   AUTH
+========================= */
+
+function auth(req, res, next) {
+  const token =
+    req.headers.authorization || "";
+
+  if (
+    token ===
+    "Bearer " + ADMIN_PASSWORD
+  ) {
+    return next();
+  }
+
+  return res.status(401).json({
+    error: "Unauthorized"
+  });
+}
+
+/* =========================
+   GET SONGS
+========================= */
+
+app.get(
+  "/api/songs",
+  async (req, res) => {
+    try {
+      const rows =
+        await supabaseRequest(
+          "/rest/v1/songs" +
+          "?select=*" +
+          "&order=created_at.desc"
+        );
+
+      const songs =
+        (rows || []).map((song) => ({
+          id: song.id,
+          title: song.title,
+          artist: song.artist,
+          audio: song.audio,
+          cover: song.cover || "",
+          createdAt: song.created_at
+        }));
+
+      res.json(songs);
+    } catch (error) {
+      console.error(
+        "GET SONGS ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        error: "Unable to load songs"
+      });
+    }
+  }
+);
+
+/* =========================
+   UPLOAD SONGS
+========================= */
+
+app.post(
+  "/api/songs",
+  auth,
+  upload.array("audio", 50),
+  async (req, res) => {
+    try {
+      if (
+        !req.files ||
+        req.files.length === 0
+      ) {
+        return res.status(400).json({
+          error: "No audio files selected"
+        });
+      }
+
+      const artist =
+        (req.body && req.body.artist) ||
+        "Various Artists";
+
+      const uploadedSongs = [];
+
+      for (const file of req.files) {
+        /* =====================
+           FILE NAME
+        ===================== */
+
+        const ext =
+          path
+            .extname(file.originalname)
+            .toLowerCase();
+
+        const baseName =
+          path
+            .parse(file.originalname)
+            .name
+            .replace(
+              /[^a-zA-Z0-9_-]/g,
+              "_"
+            );
+
+        const uniqueName =
+          Date.now() +
+          "-" +
+          Math.random()
+            .toString(36)
+            .slice(2) +
+          "-" +
+          baseName +
+          ext;
+
+        /* =====================
+           UPLOAD TO STORAGE
+        ===================== */
+
+        await supabaseRequest(
+          "/storage/v1/object/" +
+          SUPABASE_BUCKET +
+          "/" +
+          encodeURIComponent(uniqueName),
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                file.mimetype ||
+                "audio/mpeg",
+
+              "x-upsert": "false"
+            },
+
+            body: file.buffer
+          }
+        );
+
+        /* =====================
+           PUBLIC URL
+        ===================== */
+
+        const audioUrl =
+          SUPABASE_URL +
+          "/storage/v1/object/public/" +
+          SUPABASE_BUCKET +
+          "/" +
+          encodeURIComponent(uniqueName);
+
+        /* =====================
+           DATABASE RECORD
+        ===================== */
+
+        const song = {
+          id:
+            Date.now().toString() +
+            "-" +
+            Math.random()
+              .toString(36)
+              .slice(2),
+
+          title:
+            path.parse(
+              file.originalname
+            ).name,
+
+          artist: artist,
+
+          audio: audioUrl,
+
+          cover: "",
+
+          created_at:
+            new Date().toISOString()
+        };
+
+        await supabaseRequest(
+          "/rest/v1/songs",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              Prefer:
+                "return=minimal"
+            },
+
+            body:
+              JSON.stringify(song)
+          }
+        );
+
+        uploadedSongs.push({
+          id: song.id,
+          title: song.title,
+          artist: song.artist,
+          audio: song.audio,
+          cover: song.cover,
+          createdAt: song.created_at
+        });
+      }
+
+      res.json({
+        ok: true,
+        count: uploadedSongs.length,
+        songs: uploadedSongs
+      });
+    } catch (error) {
+      console.error(
+        "UPLOAD ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        error:
+          error.message ||
+          "Upload failed"
+      });
+    }
+  }
+);
+
+/* =========================
+   DELETE SONG
+========================= */
+
+app.delete(
+  "/api/songs/:id",
+  auth,
+  async (req, res) => {
+    try {
+      /* GET SONG */
+
+      const rows =
+        await supabaseRequest(
+          "/rest/v1/songs" +
+          "?id=eq." +
+          encodeURIComponent(
+            req.params.id
+          ) +
+          "&select=*"
+        );
+
+      if (
+        !rows ||
+        rows.length === 0
+      ) {
+        return res.status(404).json({
+          error: "Song not found"
+        });
+      }
+
+      const song = rows[0];
+
+      /* =====================
+         FIND STORAGE FILE
+      ===================== */
+
+      let storagePath = null;
+
+      const marker =
+        "/storage/v1/object/public/" +
+        SUPABASE_BUCKET +
+        "/";
+
+      if (
+        song.audio &&
+        song.audio.includes(marker)
+      ) {
+        storagePath =
+          song.audio.split(marker)[1];
+
+        storagePath =
+          decodeURIComponent(storagePath);
+      }
+
+      /* =====================
+         DELETE STORAGE
+      ===================== */
+
+      if (storagePath) {
+        try {
+          await supabaseRequest(
+            "/storage/v1/object/" +
+            SUPABASE_BUCKET +
+            "/" +
+            encodeURIComponent(
+              storagePath
+            ),
+            {
+              method: "DELETE"
+            }
+          );
+        } catch (storageError) {
+          console.error(
+            "Storage delete error:",
+            storageError
+          );
+        }
+      }
+
+      /* =====================
+         DELETE DATABASE ROW
+      ===================== */
+
+      await supabaseRequest(
+        "/rest/v1/songs" +
+        "?id=eq." +
+        encodeURIComponent(
+          req.params.id
+        ),
+        {
+          method: "DELETE"
+        }
+      );
+
+      res.json({
+        ok: true
+      });
+    } catch (error) {
+      console.error(
+        "DELETE ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        error:
+          error.message ||
+          "Delete failed"
+      });
+    }
+  }
+);
+
+/* =========================
+   ONLINE USERS
+========================= */
+
+const onlineUsers = new Map();
+
+const ONLINE_TIMEOUT =
+  60 * 1000;
+
+/* Remove inactive users */
+
+setInterval(() => {
+  const now = Date.now();
+
+  for (
+    const [visitorId, lastSeen]
+    of onlineUsers
+  ) {
+    if (
+      now - lastSeen >
+      ONLINE_TIMEOUT
+    ) {
+      onlineUsers.delete(visitorId);
+    }
+  }
+}, 30000);
+
+/* =========================
+   HEARTBEAT
+========================= */
+
+app.post(
+  "/api/heartbeat",
+  (req, res) => {
+    let visitorId =
+      req.body &&
+      req.body.visitorId;
+
+    if (
+      !visitorId ||
+      typeof visitorId !== "string"
+    ) {
+      visitorId =
+        "visitor-" +
+        Date.now() +
+        "-" +
+        Math.random()
+          .toString(36)
+          .slice(2);
+    }
+
+    visitorId =
+      visitorId.slice(0, 100);
+
+    onlineUsers.set(
+      visitorId,
+      Date.now()
+    );
+
+    /* Clean old users */
+
+    const now = Date.now();
+
+    for (
+      const [id, lastSeen]
+      of onlineUsers
+    ) {
+      if (
+        now - lastSeen >
+        ONLINE_TIMEOUT
+      ) {
+        onlineUsers.delete(id);
+      }
+    }
+
+    res.json({
+      ok: true,
+      online: onlineUsers.size
+    });
+  }
+);
+
+/* =========================
+   STATUS
+========================= */
+
+app.get(
+  "/api/status",
+  (req, res) => {
+    const now = Date.now();
+
+    for (
+      const [id, lastSeen]
+      of onlineUsers
+    ) {
+      if (
+        now - lastSeen >
+        ONLINE_TIMEOUT
+      ) {
+        onlineUsers.delete(id);
+      }
+    }
+
+    res.json({
+      ok: true,
+      service: "Auto Wala",
+      online: onlineUsers.size,
+      uptime: process.uptime(),
+      time: new Date().toISOString()
+    });
+  }
+);
+
+/* =========================
+   VISIT API
+========================= */
+
+app.post(
+  "/api/visit",
+  (req, res) => {
+    res.json({
+      ok: true
+    });
+  }
+);
+
+/* =========================
+   PLAY API
+========================= */
+
+app.post(
+  "/api/play",
+  async (req, res) => {
+    try {
+      const songId =
+        req.body &&
+        req.body.songId;
+
+      if (
+        !songId ||
+        typeof songId !== "string"
+      ) {
+        return res.status(400).json({
+          error: "songId required"
+        });
+      }
+
+      const rows =
+        await supabaseRequest(
+          "/rest/v1/songs" +
+          "?id=eq." +
+          encodeURIComponent(songId) +
+          "&select=id,title,artist"
+        );
+
+      if (
+        !rows ||
+        rows.length === 0
+      ) {
+        return res.status(404).json({
+          error: "Song not found"
+        });
+      }
+
+      res.json({
+        ok: true
+      });
+    } catch (error) {
+      console.error(
+        "PLAY ERROR:",
+        error
+      );
+
+      res.json({
+        ok: false
+      });
+    }
+  }
+);
+
+/* =========================
+   ANALYTICS
+========================= */
+
+app.get(
+  "/api/analytics",
+  auth,
+  (req, res) => {
+    const now = Date.now();
+
+    for (
+      const [id, lastSeen]
+      of onlineUsers
+    ) {
+      if (
+        now - lastSeen >
+        ONLINE_TIMEOUT
+      ) {
+        onlineUsers.delete(id);
+      }
+    }
+
+    res.json({
+      ok: true,
+      online: onlineUsers.size,
+      totalVisits: 0,
+      totalPlays: 0
+    });
+  }
+);
+
+/* =========================
+   ERROR HANDLER
+========================= */
+
+app.use(
+  (
+    error,
+    req,
+    res,
+    next
+  ) => {
+    console.error(
+      "SERVER ERROR:",
+      error
+    );
+
+    if (
+      error instanceof
+      multer.MulterError
+    ) {
+      return res.status(400).json({
+        error:
+          "Upload error: " +
+          error.message
+      });
+    }
+
+    res.status(500).json({
+      error:
+        error.message ||
+        "Server error"
+    });
+  }
+);
+
+/* =========================
+   START SERVER
+========================= */
+
+app.listen(
+  PORT,
+  () => {
+    console.log(
+      "Auto Wala running on port " +
+      PORT
+    );
+
+    console.log(
+      "Supabase bucket: " +
+      SUPABASE_BUCKET
+    );
+  }
+);
