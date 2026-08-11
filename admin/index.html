@@ -1,41 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Auto Wala Admin</title>
-</head>
-<body>
-  <h1>Auto Wala - Admin</h1>
 
-  <p>Admin panel is working.</p>
-
-  <input id="password" type="password" placeholder="Admin password">
-  <button onclick="login()">Login</button>
-
-  <p id="status"></p>
-
-  <script>
-    async function login() {
-      const password = document.getElementById("password").value;
-
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ password })
-      });
-
-      const data = await response.json();
-
-      if (data.ok) {
-        document.getElementById("status").innerText = "Login successful!";
-        localStorage.setItem("adminToken", data.token);
-      } else {
-        document.getElementById("status").innerText = "Wrong password";
-      }
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #111;
+      color: white;
     }
-  </script>
-</body>
-</html>
+
+    h1 {
+      text-align: center;
+    }
+
+    form, .song {
+      background: #222;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 12px;
+    }
+
+    input, button {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      background: white;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .delete {
+      background: #d33;
+      color: white;
+    }
+
+    #message {
+      text-align: center;
+      margin: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🎵 Auto Wala Admin</h1>
+
+<form id="uploadForm">
+
+  <input
+    type="text"
+    id="title"
+    placeholder="Song title"
+    required
+  >
+
+  <input
+    type="text"
+    id="artist"
+    placeholder="Artist name"
+  >
+
+  <label>Song file:</label>
+  <input
+    type="file"
+    id="audio"
+    accept="audio/*"
+    required
+  >
+
+  <label>Cover image (optional):</label>
+  <input
+    type="file"
+    id="cover"
+    accept="image/*"
+  >
+
+  <button type="submit">⬆️ Upload Song</button>
+
+</form>
+
+<div id="message"></div>
+
+<h2>Uploaded Songs</h2>
+
+<div id="songs"></
