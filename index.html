@@ -683,13 +683,28 @@ audio{
     font-size:13px;
   }
 
-  .player{
-    width:calc(100% - 12px);
-    bottom:6px;
-    gap:8px;
-    padding:8px;
-    border-radius:21px;
-  }
+ .player{
+  width:calc(100% - 16px);
+  left:8px;
+  bottom:8px;
+  transform:none;
+
+  gap:9px;
+  padding:8px 10px;
+
+  border-radius:18px;
+
+  background:
+    linear-gradient(135deg,#ffffff12,#ffffff04),
+    #15151bdc;
+
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px);
+
+  box-shadow:
+    0 12px 35px #0009,
+    inset 0 1px #fff2;
+}
 
   .player .cover{
     width:42px;
