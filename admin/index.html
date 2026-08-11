@@ -4,134 +4,350 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Auto Wala Admin</title>
+
 <style>
-body{font-family:Arial,sans-serif;max-width:700px;margin:30px auto;padding:20px;background:#111;color:#fff}
-h1{text-align:center}
-form,.song{background:#222;padding:20px;margin-top:20px;border-radius:12px}
-input,button{width:100%;box-sizing:border-box;padding:12px;margin:8px 0;border-radius:8px;border:0}
-button{background:#fff;color:#111;font-weight:bold;cursor:pointer}
-audio{width:100%;margin-top:10px}
-.delete{background:#d33;color:#fff}
-#message{text-align:center;margin:15px}
+body{
+  font-family:Arial,sans-serif;
+  max-width:700px;
+  margin:30px auto;
+  padding:20px;
+  background:#111;
+  color:#fff;
+}
+
+h1{
+  text-align:center;
+}
+
+form,.song{
+  background:#222;
+  padding:20px;
+  margin-top:20px;
+  border-radius:12px;
+}
+
+input,button{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  margin:8px 0;
+  border-radius:8px;
+  border:0;
+}
+
+button{
+  background:#fff;
+  color:#111;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+audio{
+  width:100%;
+  margin-top:10px;
+}
+
+.delete{
+  background:#d33;
+  color:#fff;
+}
+
+#message{
+  text-align:center;
+  margin:15px;
+}
 </style>
 </head>
+
 <body>
 
 <h1>🎵 Auto Wala Admin</h1>
 
 <form id="uploadForm">
 
-<input id="artist" type="text" placeholder="Artist name">
+  <input
+    id="artist"
+    type="text"
+    placeholder="Artist name (optional)"
+  >
 
-<label>Song file:</label>
-<input id="audio" type="file" accept=".p3,audio/mpeg" multiple required>
+  <label>Song files:</label>
 
-<label>Cover image (optional):</label>
-<input id="cover" type="file" accept="image/*">
+  <input
+    id="audio"
+    type="file"
+    accept=".mp3,audio/mpeg"
+    multiple
+    required
+  >
 
-<button type="submit">⬆️ Upload All Song</button>
+  <button type="submit">
+    ⬆️ Upload All Songs
+  </button>
+
 </form>
 
 <div id="message"></div>
 
 <h2>Uploaded Songs</h2>
+
 <div id="songs"></div>
 
 <script>
-const token=localStorage.getItem("adminToken");
+
+const token = localStorage.getItem("adminToken");
 
 if(!token){
   alert("Please login first");
   location.href="/admin/";
 }
 
+
+/* LOAD SONGS */
+
 async function loadSongs(){
-  const response=await fetch("/api/songs");
-  const songs=await response.json();
-  const box=document.getElementById("songs");
-  box.innerHTML="";
 
-  if(!songs.length){
-    box.innerHTML="<p>No songs uploaded yet.</p>";
-    return;
-  }
+  try{
 
-  songs.forEach(song=>{
-    const div=document.createElement("div");
-    div.className="song";
+    const response =
+      await fetch("/api/songs");
 
-    div.innerHTML=
-      "<h3>"+escapeHtml(song.title)+"</h3>"+
-      "<p>"+escapeHtml(song.artist)+"</p>"+
-      (song.cover
-        ? '<img src="'+song.cover+'" style="width:100%;max-height:250px;object-fit:cover;border-radius:8px;">'
-        : "")+
-      '<audio controls src="'+song.audio+'"></audio>'+
-      '<button class="delete" onclick="deleteSong(\''+song.id+'\')">🗑️ Delete</button>';
+    const songs =
+      await response.json();
 
-    box.appendChild(div);
-  });
-}
+    const box =
+      document.getElementById("songs");
 
-document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+    box.innerHTML="";
 
-  e.preventDefault();
+    if(!songs.length){
 
-  const message = document.getElementById("message");
-  const files = document.getElementById("audio").files;
+      box.innerHTML =
+        "<p>No songs uploaded yet.</p>";
 
-  if (!files.length) {
-    message.innerText = "❌ Please select MP3 files";
-    return;
-  }
+      return;
+    }
 
-  message.innerText = "Uploading " + files.length + " songs...";
+    songs.forEach(song=>{
 
-  const fd = new FormData();
+      const div =
+        document.createElement("div");
 
-  for (const file of files) {
-    fd.append("audio", file);
-  }
+      div.className="song";
 
-  const artist = document.getElementById("artist").value;
+      div.innerHTML =
+        "<h3>"+
+        escapeHtml(song.title)+
+        "</h3>"+
 
-  if (artist) {
-    fd.append("artist", artist);
-  }
+        "<p>"+
+        escapeHtml(song.artist)+
+        "</p>"+
 
-  const cover = document.getElementById("cover").files[0];
+        '<audio controls src="'+
+        song.audio+
+        '"></audio>'+
 
-  if (cover) {
-    fd.append("cover", cover);
-  }
+        '<button class="delete" '+
+        'onclick="deleteSong(\''+
+        song.id+
+        '\')">'+
+        '🗑️ Delete</button>';
 
-  try {
+      box.appendChild(div);
 
-    const response = await fetch("/api/songs", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + token
-      },
-      body: fd
     });
 
-    const data = await response.json();
+  }catch(error){
 
-    if (!response.ok) {
-      throw new Error(data.error || "Upload failed");
+    document.getElementById("songs").innerHTML =
+      "<p>Unable to load songs.</p>";
+
+  }
+}
+
+
+/* MULTIPLE UPLOAD */
+
+document
+.getElementById("uploadForm")
+.addEventListener(
+  "submit",
+  async function(e){
+
+    e.preventDefault();
+
+    const message =
+      document.getElementById("message");
+
+    const files =
+      document.getElementById("audio").files;
+
+    if(!files || files.length===0){
+
+      message.innerText =
+        "❌ Please select MP3 files";
+
+      return;
     }
 
     message.innerText =
-      "✅ " + data.count + " songs uploaded successfully!";
+      "⏳ Uploading "+
+      files.length+
+      " songs...";
 
-    document.getElementById("uploadForm").reset();
+
+    const fd =
+      new FormData();
+
+
+    for(const file of files){
+
+      fd.append(
+        "audio",
+        file
+      );
+
+    }
+
+
+    const artist =
+      document.getElementById(
+        "artist"
+      ).value.trim();
+
+
+    if(artist){
+
+      fd.append(
+        "artist",
+        artist
+      );
+
+    }
+
+
+    try{
+
+      const response =
+        await fetch(
+          "/api/songs",
+          {
+            method:"POST",
+
+            headers:{
+              "Authorization":
+              "Bearer "+token
+            },
+
+            body:fd
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if(!response.ok){
+
+        throw new Error(
+          data.error ||
+          "Upload failed"
+        );
+
+      }
+
+
+      message.innerText =
+        "✅ "+
+        data.count+
+        " songs uploaded successfully!";
+
+
+      document
+      .getElementById("uploadForm")
+      .reset();
+
+
+      loadSongs();
+
+
+    }catch(error){
+
+      message.innerText =
+        "❌ "+
+        error.message;
+
+    }
+
+  }
+);
+
+
+/* DELETE */
+
+async function deleteSong(id){
+
+  if(
+    !confirm(
+      "Delete this song?"
+    )
+  ){
+    return;
+  }
+
+
+  const response =
+    await fetch(
+      "/api/songs/"+id,
+      {
+        method:"DELETE",
+
+        headers:{
+          "Authorization":
+          "Bearer "+token
+        }
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if(data.ok){
 
     loadSongs();
 
-  } catch (error) {
+  }else{
 
-    message.innerText = "❌ " + error.message;
+    alert(
+      data.error ||
+      "Delete failed"
+    );
 
   }
+}
 
-});
+
+/* HTML ESCAPE */
+
+function escapeHtml(text){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    text || "";
+
+  return div.innerHTML;
+}
+
+
+loadSongs();
+
+</script>
+
+</body>
+</html>
