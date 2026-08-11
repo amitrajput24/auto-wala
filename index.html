@@ -1299,20 +1299,20 @@ audio{
   --rideBeat:0;
 }
 .rideOverlay.musicPulse .rideGlow{
-  transform:scale(calc(1 + (var(--rideBeat) * .22)));
+  transform:scale(calc(1 + (var(--rideBeat) * .38)));
   opacity:calc(.72 + (var(--rideBeat) * .28));
 }
 .rideOverlay.musicPulse .rideAuto{
   filter:
     drop-shadow(0 24px 25px #0009)
-    drop-shadow(0 0 calc(8px + (var(--rideBeat) * 18px)) #f6d86a55);
+    drop-shadow(0 0 calc(8px + (var(--rideBeat) * 28px)) #f6d86a55);
 }
 .rideOverlay.musicPulse .rideTraffic{
-  opacity:calc(.65 + (var(--rideBeat) * .35));
+  opacity:calc(.58 + (var(--rideBeat) * .42));
 }
 .rideOverlay.musicPulse .rideStatus{
   border-color:#ffffff2c;
-  box-shadow:0 0 calc(8px + (var(--rideBeat) * 18px)) #f6d86a18;
+  box-shadow:0 0 calc(8px + (var(--rideBeat) * 28px)) #f6d86a18;
 }
 
 /* RIDE MODE — STEP 2 */
@@ -1746,6 +1746,7 @@ audio{
 
     <audio
       id="audio"
+      crossorigin="anonymous"
       controls
     ></audio>
 
@@ -1782,7 +1783,6 @@ let idx=-1;
 
 const audio=
 document.getElementById("audio");
-
 
 /* VISITOR */
 
@@ -2276,6 +2276,7 @@ audio.onplay=
       "mainBtn"
     ).textContent="❚❚";
 
+    startRideMusicSync();
     render();
 
   };
@@ -2288,6 +2289,7 @@ audio.onpause=
       "mainBtn"
     ).textContent="▶";
 
+    stopRideMusicSync();
     render();
 
   };
@@ -2322,12 +2324,14 @@ const rideClose=document.getElementById("rideClose");
 
 function openRideMode(){
   rideOverlay.classList.add("open");
+  if(!audio.paused) startRideMusicSync();
   rideOverlay.setAttribute("aria-hidden","false");
   document.body.style.overflow="hidden";
 }
 
 function closeRideMode(){
   rideOverlay.classList.remove("open");
+  stopRideMusicSync();
   rideOverlay.setAttribute("aria-hidden","true");
   document.body.style.overflow="";
 }
@@ -2352,66 +2356,56 @@ let rideAudioReady=false;
 
 function setupRideAudio(){
   if(rideAudioReady) return true;
-
   try{
-    const AudioContextClass=
-      window.AudioContext ||
-      window.webkitAudioContext;
-
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
     if(!AudioContextClass) return false;
-
     rideAudioContext=new AudioContextClass();
     rideAnalyser=rideAudioContext.createAnalyser();
-    rideAnalyser.fftSize=128;
-    rideAnalyser.smoothingTimeConstant=.82;
+    rideAnalyser.fftSize=256;
+    rideAnalyser.smoothingTimeConstant=.68;
     rideBeatData=new Uint8Array(rideAnalyser.frequencyBinCount);
-
-    rideAudioSource=
-      rideAudioContext.createMediaElementSource(audio);
-
+    rideAudioSource=rideAudioContext.createMediaElementSource(audio);
     rideAudioSource.connect(rideAnalyser);
     rideAnalyser.connect(rideAudioContext.destination);
-
     rideAudioReady=true;
     return true;
   }catch(error){
+    console.warn("Ride music sync unavailable",error);
     return false;
   }
 }
 
 function updateRidePulse(){
-  if(!rideAnalyser || !rideOverlay.classList.contains("open") || audio.paused){
+  if(!rideOverlay.classList.contains("open") || audio.paused){
     rideOverlay.style.setProperty("--rideBeat","0");
     rideOverlay.classList.remove("musicPulse");
     ridePulseFrame=null;
     return;
   }
 
-  rideAnalyser.getByteFrequencyData(rideBeatData);
-
-  let total=0;
-  let count=0;
-
-  for(let i=0;i<Math.min(rideBeatData.length,18);i++){
-    total+=rideBeatData[i];
-    count++;
+  let beat=0;
+  if(rideAnalyser){
+    rideAnalyser.getByteFrequencyData(rideBeatData);
+    let total=0, weight=0;
+    const maxBin=Math.min(30,rideBeatData.length);
+    for(let i=0;i<maxBin;i++){
+      const w=i<8 ? 2.8 : (i<18 ? 1.7 : 1);
+      total+=rideBeatData[i]*w;
+      weight+=w;
+    }
+    const raw=weight ? total/(weight*255) : 0;
+    beat=Math.min(1,Math.max(0,(raw-.035)*2.8));
   }
 
-  const raw=count ? total/(count*255) : 0;
-  const beat=Math.min(1,Math.max(0,raw*2.15));
-
   rideOverlay.style.setProperty("--rideBeat",beat.toFixed(3));
-  rideOverlay.classList.toggle("musicPulse",beat>.035);
-
+  rideOverlay.classList.toggle("musicPulse",beat>.025);
   ridePulseFrame=requestAnimationFrame(updateRidePulse);
 }
 
 function startRidePulse(){
-  if(!setupRideAudio()) return;
-
+  setupRideAudio();
   if(rideAudioContext && rideAudioContext.state==="suspended")
     rideAudioContext.resume().catch(()=>{});
-
   if(!ridePulseFrame)
     ridePulseFrame=requestAnimationFrame(updateRidePulse);
 }
@@ -2421,7 +2415,6 @@ function stopRidePulse(){
     cancelAnimationFrame(ridePulseFrame);
     ridePulseFrame=null;
   }
-
   rideOverlay.style.setProperty("--rideBeat","0");
   rideOverlay.classList.remove("musicPulse");
 }
@@ -2431,9 +2424,7 @@ const originalRideClose=closeRideMode;
 
 openRideMode=function(){
   originalRideOpen();
-
-  if(!audio.paused)
-    startRidePulse();
+  if(!audio.paused) startRidePulse();
 };
 
 closeRideMode=function(){
@@ -2441,17 +2432,6 @@ closeRideMode=function(){
   stopRidePulse();
 };
 
-audio.addEventListener("play",()=>{
-  if(rideOverlay.classList.contains("open"))
-    startRidePulse();
-});
-
-audio.addEventListener("pause",stopRidePulse);
-audio.addEventListener("ended",stopRidePulse);
-
-
-
 </script>
-
 </body>
 </html>
