@@ -1359,13 +1359,83 @@ audio{
   box-shadow:0 0 18px color-mix(in srgb,var(--moodAccent) 22%,transparent);
 }
 .rideMood small{display:block;margin-top:3px;opacity:.55;font-size:9px;font-weight:600}
-.rideOverlay[data-mood="rain"] .rideSky{opacity:.2}
-.rideOverlay[data-mood="rain"]:after{
-  content:"";position:absolute;inset:-20%;z-index:3;pointer-events:none;opacity:.62;
-  background:repeating-linear-gradient(105deg,transparent 0 16px,#9fdcff33 17px,#9fdcff33 18px,transparent 19px 30px);
-  animation:rainFall .55s linear infinite;
+.rideOverlay[data-mood="rain"]:before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:7%;
+  height:28%;
+  z-index:2;
+  pointer-events:none;
+  opacity:.55;
+  background:
+    radial-gradient(ellipse at 18% 55%,#9fdcff1c 0 1px,transparent 2px),
+    radial-gradient(ellipse at 42% 70%,#9fdcff18 0 1px,transparent 2px),
+    radial-gradient(ellipse at 67% 48%,#9fdcff1c 0 1px,transparent 2px),
+    linear-gradient(180deg,transparent,#72b7d80d 72%,#72b7d814);
+  background-size:110px 42px,150px 55px,130px 48px,100% 100%;
+  animation:rainPuddle 1.8s ease-in-out infinite alternate;
 }
-@keyframes rainFall{to{transform:translate3d(-35px,55px,0)}}
+
+.rideOverlay[data-mood="rain"] .rideSky{
+  opacity:.18;
+  filter:saturate(.75) brightness(.72);
+}
+
+/* RAIN — layered depth instead of a flat stripe overlay */
+.rideOverlay[data-mood="rain"]:after{
+  content:"";
+  position:absolute;
+  inset:-35%;
+  z-index:3;
+  pointer-events:none;
+  opacity:.72;
+  background:
+    repeating-linear-gradient(
+      108deg,
+      transparent 0 22px,
+      #d9f5ff22 22px 23px,
+      #d9f5ff62 23px 24.5px,
+      transparent 24.5px 42px
+    ),
+    repeating-linear-gradient(
+      108deg,
+      transparent 0 58px,
+      #bdeaff30 58px 59px,
+      transparent 59px 82px
+    );
+  filter:blur(.15px);
+  transform:translate3d(0,-8%,0) rotate(-1deg);
+  animation:rainFall .72s linear infinite;
+}
+
+.rideOverlay[data-mood="rain"] .rideCity{
+  filter:brightness(.82) saturate(.72);
+}
+
+.rideOverlay[data-mood="rain"] .rideRoad{
+  filter:brightness(.82);
+}
+
+.rideOverlay[data-mood="rain"] .rideRoad:before{
+  opacity:.5;
+}
+
+.rideOverlay[data-mood="rain"] .rideStatus{
+  border-color:#9fdcff38;
+  background:#071521aa;
+  box-shadow:0 0 24px #72b7d822;
+}
+
+@keyframes rainFall{
+  0%{transform:translate3d(0,-10%,0) rotate(-1deg)}
+  100%{transform:translate3d(-42px,58%,0) rotate(-1deg)}
+}
+@keyframes rainPuddle{
+  from{transform:scaleX(.96);opacity:.34}
+  to{transform:scaleX(1.04);opacity:.62}
+}
 .rideOverlay[data-mood="love"] .rideSky{opacity:.3}
 .rideOverlay[data-mood="love"] .rideGlow{filter:blur(16px) saturate(1.35)}
 .rideOverlay[data-mood="bass"] .rideCity{filter:saturate(1.35) contrast(1.08)}
