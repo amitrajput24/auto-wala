@@ -46,117 +46,7 @@ body:before{
 }
 
 
-/* =========================
-   LOADING SCREEN
-========================= */
-
-#loadingScreen{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  background:
-    radial-gradient(circle at 50% 38%,#24527f 0%,#0b2545 45%,#071321 100%);
-
-  transition:
-    opacity .55s ease,
-    visibility .55s ease;
-}
-
-#loadingScreen.hide{
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-}
-
-.loaderAuto{
-  font-size:72px;
-
-  filter:
-    drop-shadow(0 12px 20px #0008);
-
-  animation:
-    loaderBounce 1s ease-in-out infinite;
-}
-
-@keyframes loaderBounce{
-  0%,100%{
-    transform:translateY(0) rotate(-2deg);
-  }
-
-  50%{
-    transform:translateY(-10px) rotate(2deg);
-  }
-}
-
-.loaderBrand{
-  margin-top:18px;
-
-  font-size:32px;
-  font-weight:1000;
-
-  letter-spacing:-1px;
-
-  text-shadow:
-    0 5px 20px #0008;
-}
-
-.loaderText{
-  margin-top:9px;
-
-  font-size:13px;
-
-  opacity:.65;
-}
-
-.loaderDots{
-  display:flex;
-  gap:5px;
-
-  margin-top:18px;
-}
-
-.loaderDots span{
-  width:7px;
-  height:7px;
-
-  border-radius:50%;
-
-  background:#fff;
-
-  animation:
-    loaderDot .8s infinite alternate;
-}
-
-.loaderDots span:nth-child(2){
-  animation-delay:.2s;
-}
-
-.loaderDots span:nth-child(3){
-  animation-delay:.4s;
-}
-
-@keyframes loaderDot{
-  from{
-    opacity:.25;
-    transform:translateY(0);
-  }
-
-  to{
-    opacity:1;
-    transform:translateY(-5px);
-  }
-}
-
-
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 header{
   position:relative;
@@ -223,9 +113,7 @@ header{
 }
 
 
-/* =========================
-   HERO
-========================= */
+/* HERO */
 
 .heroTitle{
   text-align:center;
@@ -268,9 +156,7 @@ header{
 }
 
 
-/* =========================
-   AUTO
-========================= */
+/* AUTO */
 
 .auto{
   position:relative;
@@ -429,9 +315,7 @@ header{
 }
 
 
-/* =========================
-   SEARCH
-========================= */
+/* SEARCH */
 
 .searchBox{
   width:min(760px,92%);
@@ -498,9 +382,7 @@ header{
 }
 
 
-/* =========================
-   SONG SECTION
-========================= */
+/* SONG SECTION */
 
 .section{
   width:min(760px,92%);
@@ -534,9 +416,7 @@ header{
 }
 
 
-/* =========================
-   SONG CARD
-========================= */
+/* SONG CARD */
 
 .song{
   position:relative;
@@ -672,9 +552,7 @@ header{
 }
 
 
-/* =========================
-   EQUALIZER
-========================= */
+/* EQUALIZER */
 
 .equalizer{
   display:none;
@@ -726,9 +604,7 @@ header{
 }
 
 
-/* =========================
-   PLAY BUTTON
-========================= */
+/* PLAY BUTTON */
 
 .playBtn{
   width:42px;
@@ -768,9 +644,7 @@ header{
 }
 
 
-/* =========================
-   PLAYER
-========================= */
+/* PLAYER */
 
 .player{
   position:fixed;
@@ -894,9 +768,7 @@ audio{
 }
 
 
-/* =========================
-   OTHER BUTTONS
-========================= */
+/* OTHER BUTTONS */
 
 .horn{
   position:fixed;
@@ -959,14 +831,13 @@ audio{
 }
 
 
-/* =========================
-   MOBILE
-========================= */
+/* MOBILE POLISH */
 
 @media(max-width:600px){
 
   body{
-    padding-bottom:125px;
+    padding-bottom:145px;
+    overflow-x:hidden;
   }
 
   header{
@@ -983,20 +854,23 @@ audio{
   }
 
   .heroTitle{
-    margin-top:43px;
+    margin-top:34px;
+    padding:0 10px;
   }
 
   .heroTitle h1{
-    font-size:58px;
+    font-size:56px;
     letter-spacing:-4px;
   }
 
   .heroTitle p{
+    margin-top:10px;
     font-size:12px;
   }
 
   .hero{
     height:220px;
+    overflow:hidden;
   }
 
   .auto{
@@ -1014,19 +888,26 @@ audio{
   }
 
   .tag{
-    bottom:0;
-    font-size:12px;
+    bottom:2px;
+    font-size:11px;
+    opacity:.75;
   }
 
   .searchBox{
     width:calc(100% - 24px);
-    margin-bottom:20px;
+    margin:0 auto 20px;
   }
 
   .searchBox input{
-    padding:15px 16px 15px 47px;
+    height:50px;
+    padding:0 15px 0 46px;
     border-radius:17px;
     font-size:14px;
+  }
+
+  .searchIcon{
+    left:16px;
+    font-size:17px;
   }
 
   .section{
@@ -1034,69 +915,95 @@ audio{
   }
 
   .sectionTitle{
-    margin:15px 0 9px;
+    margin:14px 0 10px;
   }
 
   .sectionTitle h2{
-    font-size:19px;
+    font-size:18px;
+  }
+
+  .sectionTitle span{
+    padding:5px 9px;
+    font-size:10px;
   }
 
   .song{
     gap:10px;
     padding:9px;
+    margin:8px 0;
+    min-height:67px;
     border-radius:17px;
+  }
+
+  .song:hover{
+    transform:none;
   }
 
   .cover{
     width:48px;
     height:48px;
-    border-radius:14px;
+    border-radius:13px;
+  }
+
+  .meta{
+    min-width:0;
   }
 
   .title{
     font-size:14px;
+    line-height:18px;
   }
 
   .artist{
+    margin-top:3px;
     font-size:11px;
-  }
-
-  .playBtn{
-    width:38px;
-    height:38px;
   }
 
   .equalizer{
     width:18px;
+    height:18px;
+    gap:2px;
+  }
+
+  .eqBar{
+    width:3px;
+  }
+
+  .playBtn{
+    width:39px;
+    height:39px;
+    font-size:13px;
   }
 
   .player{
-    width:calc(100% - 16px);
-
     left:8px;
+    right:8px;
     bottom:8px;
-
+    width:auto;
     transform:none;
-
-    gap:9px;
-
-    padding:8px 10px;
-
+    gap:8px;
+    padding:8px;
     border-radius:18px;
   }
 
   .player .cover{
-    width:42px;
-    height:42px;
+    width:43px;
+    height:43px;
     border-radius:12px;
+  }
+
+  .playerInfo{
+    min-width:0;
   }
 
   .playerTitle{
     font-size:12px;
+    line-height:15px;
   }
 
   .playerArtist{
     font-size:10px;
+    margin-top:2px;
   }
 
   audio{
@@ -1106,76 +1013,72 @@ audio{
 
   .controls{
     gap:0;
+    flex:none;
   }
 
   .controls button{
-    width:31px;
-    height:31px;
+    width:30px;
+    height:34px;
     font-size:18px;
   }
 
   .mainBtn{
-    width:37px!important;
-    height:37px!important;
+    width:38px!important;
+    height:38px!important;
     font-size:15px!important;
   }
 
   .horn{
     left:8px;
-    bottom:98px;
-    padding:8px 11px;
-    font-size:10px;
+    bottom:103px;
+    padding:8px 10px;
     border-radius:12px;
+    font-size:10px;
   }
 
   .onlineBox{
     right:8px;
-    bottom:98px;
+    bottom:103px;
     padding:8px 10px;
-    font-size:10px;
     border-radius:12px;
+    font-size:10px;
   }
 
-  .loaderAuto{
-    font-size:58px;
+  .empty{
+    padding:30px 15px;
+    border-radius:17px;
+    font-size:13px;
   }
-
-  .loaderBrand{
-    font-size:27px;
-  }
-
-  .loaderText{
-    font-size:12px;
-  }
-
 }
 
-
-/* =========================
-   SMALL MOBILE
-========================= */
+/* SMALL PHONES */
 
 @media(max-width:380px){
 
+  .heroTitle{
+    margin-top:30px;
+  }
+
   .heroTitle h1{
-    font-size:50px;
+    font-size:49px;
+    letter-spacing:-3px;
   }
 
   .hero{
-    height:205px;
+    height:195px;
   }
 
   .auto{
-    transform:scale(.44);
+    transform:scale(.43);
   }
 
   @keyframes floatAuto{
     0%,100%{
-      transform:translateY(0) scale(.44);
+      transform:translateY(0) scale(.43);
     }
 
     50%{
-      transform:translateY(-5px) scale(.44);
+      transform:translateY(-5px) scale(.43);
     }
   }
 
@@ -1184,7 +1087,7 @@ audio{
   }
 
   .controls button{
-    width:28px;
+    width:27px;
   }
 
   .mainBtn{
@@ -1192,42 +1095,18 @@ audio{
     height:35px!important;
   }
 
+  .horn,
+  .onlineBox{
+    bottom:98px;
+  }
 }
+
 </style>
 </head>
 
 
 <body>
 
-
-<!-- =========================
-     LOADING SCREEN
-========================= -->
-
-<div id="loadingScreen">
-
-  <div class="loaderAuto">
-    🚕
-  </div>
-
-  <div class="loaderBrand">
-    ऑटो वाला
-  </div>
-
-  <div class="loaderText">
-    गाने लोड हो रहे हैं...
-  </div>
-
-  <div class="loaderDots">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
-</div>
-
-
-<!-- HEADER -->
 
 <header>
 
@@ -1248,8 +1127,6 @@ audio{
 
 </header>
 
-
-<!-- HERO -->
 
 <section class="heroTitle">
 
@@ -1291,8 +1168,6 @@ audio{
 </section>
 
 
-<!-- SEARCH -->
-
 <div class="searchBox">
 
   <span class="searchIcon">
@@ -1307,8 +1182,6 @@ audio{
 
 </div>
 
-
-<!-- SONGS -->
 
 <section class="section">
 
@@ -1327,8 +1200,6 @@ audio{
 </section>
 
 
-<!-- HORN -->
-
 <button
   class="horn"
   id="horn"
@@ -1337,14 +1208,10 @@ audio{
 </button>
 
 
-<!-- ONLINE -->
-
 <div class="onlineBox">
   🟢 <span id="onlineText">Live</span>
 </div>
 
-
-<!-- PLAYER -->
 
 <div
   class="player"
@@ -1412,9 +1279,7 @@ const audio=
 document.getElementById("audio");
 
 
-/* =========================
-   VISITOR
-========================= */
+/* VISITOR */
 
 const visitorId=
 localStorage.getItem(
@@ -1435,9 +1300,7 @@ localStorage.setItem(
 );
 
 
-/* =========================
-   CLOCK
-========================= */
+/* CLOCK */
 
 function updateClock(){
 
@@ -1470,9 +1333,7 @@ setInterval(
 );
 
 
-/* =========================
-   ONLINE
-========================= */
+/* ONLINE */
 
 async function heartbeat(){
 
@@ -1529,9 +1390,7 @@ setInterval(
 );
 
 
-/* =========================
-   VISIT
-========================= */
+/* VISIT */
 
 fetch(
   "/api/visit",
@@ -1550,9 +1409,7 @@ fetch(
 ).catch(()=>{});
 
 
-/* =========================
-   CLEAN TITLE
-========================= */
+/* CLEAN TITLE */
 
 function cleanSongTitle(title){
 
@@ -1565,9 +1422,7 @@ function cleanSongTitle(title){
 }
 
 
-/* =========================
-   ESCAPE
-========================= */
+/* ESCAPE */
 
 function esc(text){
 
@@ -1589,30 +1444,7 @@ function esc(text){
 }
 
 
-/* =========================
-   HIDE LOADING
-========================= */
-
-function hideLoading(){
-
-  const loader=
-  document.getElementById(
-    "loadingScreen"
-  );
-
-  if(!loader)
-    return;
-
-  loader.classList.add(
-    "hide"
-  );
-
-}
-
-
-/* =========================
-   LOAD SONGS
-========================= */
+/* LOAD */
 
 async function load(){
 
@@ -1623,12 +1455,6 @@ async function load(){
       "/api/songs"
     );
 
-    if(!response.ok){
-      throw new Error(
-        "Songs API failed"
-      );
-    }
-
     songs=
     await response.json();
 
@@ -1636,17 +1462,6 @@ async function load(){
     [...songs];
 
     render();
-
-    /*
-      थोड़ा सा delay ताकि
-      loading animation smooth
-      लगे और अचानक गायब न हो।
-    */
-
-    setTimeout(
-      hideLoading,
-      350
-    );
 
   }catch(error){
 
@@ -1659,16 +1474,12 @@ async function load(){
       </div>
       `;
 
-    hideLoading();
-
   }
 
 }
 
 
-/* =========================
-   RENDER
-========================= */
+/* RENDER */
 
 function render(){
 
@@ -1773,9 +1584,7 @@ function render(){
 }
 
 
-/* =========================
-   SEARCH
-========================= */
+/* SEARCH */
 
 document
 .getElementById("search")
@@ -1808,9 +1617,7 @@ document
 );
 
 
-/* =========================
-   PLAY
-========================= */
+/* PLAY */
 
 async function play(i){
 
@@ -1885,9 +1692,7 @@ async function play(i){
 }
 
 
-/* =========================
-   TOGGLE
-========================= */
+/* TOGGLE */
 
 function toggle(){
 
@@ -1916,9 +1721,7 @@ function toggle(){
 }
 
 
-/* =========================
-   NEXT
-========================= */
+/* NEXT */
 
 function next(){
 
@@ -1935,9 +1738,7 @@ function next(){
 }
 
 
-/* =========================
-   PREVIOUS
-========================= */
+/* PREVIOUS */
 
 function prev(){
 
@@ -1955,9 +1756,7 @@ function prev(){
 }
 
 
-/* =========================
-   AUDIO EVENTS
-========================= */
+/* AUDIO */
 
 audio.onended=
   next;
@@ -1987,9 +1786,7 @@ audio.onpause=
   };
 
 
-/* =========================
-   HORN
-========================= */
+/* HORN */
 
 document
 .getElementById("horn")
@@ -2003,9 +1800,7 @@ document
 );
 
 
-/* =========================
-   START
-========================= */
+/* START */
 
 load();
 
