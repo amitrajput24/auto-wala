@@ -861,27 +861,28 @@ audio{
     margin-top:10px;
   }
 
+  /* COMPACT MOBILE HERO */
   .hero{
-    height:320px;
+    height:220px !important;
   }
 
   .auto{
-    transform:scale(.66);
+    transform:scale(.48) !important;
   }
 
   @keyframes floatAuto{
     0%,100%{
-      transform:translateY(0) scale(.66);
+      transform:translateY(0) scale(.48);
     }
 
     50%{
-      transform:translateY(-7px) scale(.66);
+      transform:translateY(-6px) scale(.48);
     }
   }
 
   .tag{
-    bottom:7px;
-    font-size:14px;
+    bottom:0 !important;
+    font-size:12px !important;
   }
 
   .searchBox{
@@ -1048,20 +1049,20 @@ audio{
   }
 
   .hero{
-    height:295px;
+    height:205px !important;
   }
 
   .auto{
-    transform:scale(.59);
+    transform:scale(.44) !important;
   }
 
   @keyframes floatAuto{
     0%,100%{
-      transform:translateY(0) scale(.59);
+      transform:translateY(0) scale(.44);
     }
 
     50%{
-      transform:translateY(-6px) scale(.59);
+      transform:translateY(-5px) scale(.44);
     }
   }
 
@@ -1079,37 +1080,6 @@ audio{
   }
 }
 
-
-/* MOBILE FINAL FIX */
-
-@media (max-width:600px){
-
-  .hero{
-    height:240px !important;
-  }
-
-  .auto{
-    transform:scale(.55) !important;
-  }
-
-  .tag{
-    bottom:0 !important;
-    font-size:13px !important;
-  }
-
-}
-
-@media (max-width:380px){
-
-  .hero{
-    height:225px !important;
-  }
-
-  .auto{
-    transform:scale(.50) !important;
-  }
-
-}
 </style>
 </head>
 
@@ -1269,9 +1239,7 @@ audio{
 <script>
 
 let songs=[];
-
 let filteredSongs=[];
-
 let idx=-1;
 
 const audio=
@@ -1603,13 +1571,6 @@ async function play(i){
 
   }catch(error){}
 
-
-  /*
-    Analytics endpoint exists
-    in the upgraded backend.
-    If old backend is being used,
-    this simply fails silently.
-  */
 
   fetch(
     "/api/play",
