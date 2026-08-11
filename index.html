@@ -1767,37 +1767,31 @@ audio{
 .rideJourneyMeta{display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-size:10px;opacity:.62}
 .rideProgress{height:4px;margin-top:9px;border-radius:999px;background:#ffffff12;overflow:hidden}
 .rideProgress i{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--moodGlow),var(--moodAccent));box-shadow:0 0 12px color-mix(in srgb,var(--moodAccent) 55%,transparent);transition:width .2s linear}
+.rideComplete{
+  position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+  background:#05090fd4;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;transition:opacity .35s ease;
+}
+.rideComplete.show{opacity:1;pointer-events:auto}
+.rideCompleteCard{width:min(360px,calc(100% - 34px));padding:25px 22px;text-align:center;border:1px solid #ffffff20;border-radius:24px;background:#101923e8;box-shadow:0 25px 70px #0009,inset 0 1px #fff2;transform:translateY(12px) scale(.97);transition:transform .35s ease}
+.rideComplete.show .rideCompleteCard{transform:none}
+.rideCompleteIcon{font-size:48px}
+.rideComplete h3{margin:8px 0 5px;font-size:28px}
+.rideComplete p{margin:0;opacity:.62;font-size:12px}
+.rideStats{display:flex;justify-content:center;gap:9px;margin:16px 0}
+.rideStat{min-width:92px;padding:9px;border:1px solid #ffffff12;border-radius:13px;background:#ffffff07}
+.rideStat b{display:block;font-size:15px}
+.rideStat span{font-size:9px;opacity:.5}
+.rideFinishBtn{border:0;border-radius:999px;padding:10px 18px;background:#fff;color:#111;font-weight:850;cursor:pointer}
+.rideOverlay.journeyComplete .rideAuto{animation:rideFinishBounce .65s ease both}
+@keyframes rideFinishBounce{0%{transform:translateY(18px) scale(1)}45%{transform:translateY(-8px) scale(1.08)}100%{transform:translateY(18px) scale(1)}}
 @media(max-width:600px){
   .rideJourney{left:10px;top:15px;width:158px;padding:9px 11px}
   .rideDestination{font-size:13px}
   .rideJourneyMeta{font-size:9px}
   .ridePanel{top:105px}
+  .rideCompleteCard{padding:22px 16px}
   .rideStat{min-width:82px}
-}
-
-
-/* RIDE MODE — STEP 6: FINAL POLISH */
-.rideOverlay{
-  transition:background .65s ease,opacity .35s ease;
-  isolation:isolate;
-}
-.rideOverlay.open{animation:rideReveal .45s cubic-bezier(.22,.8,.25,1) both;}
-.rideOverlay .rideSky,.rideOverlay .rideGlow,.rideOverlay .rideRoad,.rideOverlay .rideCity,.rideOverlay .rideTraffic{transition:filter .6s ease,opacity .45s ease,transform .6s ease;}
-.ridePanel,.rideJourney,.rideMoodBar,.rideStatus,.rideClose{transition:transform .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease,background .45s ease,border-color .45s ease;}
-.rideOverlay.open .ridePanel{animation:ridePanelIn .55s .04s both;}
-.rideOverlay.open .rideJourney{animation:ridePanelIn .55s .08s both;}
-.rideOverlay.open .rideMoodBar{animation:ridePanelIn .55s .12s both;}
-.rideOverlay.open .rideStatus{animation:ridePanelIn .55s .18s both;}
-.rideMood.active{box-shadow:0 0 0 1px var(--moodAccent),0 8px 24px color-mix(in srgb,var(--moodGlow) 25%,transparent);}
-@keyframes rideReveal{from{opacity:0;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
-@keyframes ridePanelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:600px){
-  .rideJourney{width:170px;padding:10px 12px;top:14px;left:12px;}
-  .rideMoodBar{gap:6px;}
-  .rideMood{min-width:70px;}
-}
-@media(prefers-reduced-motion:reduce){
-  .rideOverlay,.rideOverlay *{animation:none!important;transition:none!important;}
 }
 
 </style>
@@ -1944,6 +1938,20 @@ audio{
     <div class="rideJourneyMeta"><span id="rideDistance">0.0 km</span></div>
     <div class="rideProgress" aria-label="Ride progress"><i id="rideProgressFill"></i></div>
   </div>
+
+  <div class="rideComplete" id="rideComplete" aria-hidden="true">
+    <div class="rideCompleteCard">
+      <div class="rideCompleteIcon">🏁</div>
+      <h3>Ride Complete!</h3>
+      <p id="rideCompleteText">Safar mast raha 🚕🎵</p>
+      <div class="rideStats">
+        <div class="rideStat"><b id="rideCompleteDistance">0.0 km</b><span>DISTANCE</span></div>
+      </div>
+      <button class="rideFinishBtn" id="rideFinishBtn" type="button">Ride Again 🚕</button>
+    </div>
+  </div>
+</div>
+
 
 <button
   class="horn"
@@ -2742,6 +2750,10 @@ setRideMood(savedRideMood);
 const rideDestination=document.getElementById("rideDestination");
 const rideDistance=document.getElementById("rideDistance");
 const rideProgressFill=document.getElementById("rideProgressFill");
+const rideComplete=document.getElementById("rideComplete");
+const rideCompleteDistance=document.getElementById("rideCompleteDistance");
+const rideCompleteText=document.getElementById("rideCompleteText");
+const rideFinishBtn=document.getElementById("rideFinishBtn");
 
 const rideDestinations=[
   ["India Gate",3.8],["Cyber Hub",5.2],["Connaught Place",4.6],["Hauz Khas",6.1],["Marine Drive",4.3],["Chandni Chowk",3.4],["Airport Road",7.2],["Lodhi Garden",4.9]
@@ -2762,6 +2774,9 @@ function resetRideJourney(){
   pickRideDestination();
   rideJourneyStart=performance.now();
   rideProgressFill.style.width="0%";
+  rideComplete.classList.remove("show");
+  rideComplete.setAttribute("aria-hidden","true");
+  rideOverlay.classList.remove("journeyComplete");
 }
 
 function updateRideJourney(now){
@@ -2778,8 +2793,8 @@ function updateRideJourney(now){
   rideProgressFill.style.width=(progress*100).toFixed(1)+"%";
 
   if(progress>=1){
-    resetRideJourney();
-    rideJourneyFrame=requestAnimationFrame(updateRideJourney);
+    finishRideJourney();
+    rideJourneyFrame=null;
     return;
   }
 
@@ -2792,6 +2807,18 @@ function startRideJourney(){
   rideJourneyFrame=requestAnimationFrame(updateRideJourney);
 }
 
+function finishRideJourney(){
+  if(rideJourneyFrame){cancelAnimationFrame(rideJourneyFrame);rideJourneyFrame=null;}
+  rideOverlay.classList.add("journeyComplete");
+  rideComplete.classList.add("show");
+  rideComplete.setAttribute("aria-hidden","false");
+  rideCompleteDistance.textContent=rideJourneyDistance.toFixed(1)+" km";
+  rideCompleteText.textContent=""+rideDestination.textContent+" tak safar complete 🚕🎵";
+}
+
+rideFinishBtn.addEventListener("click",()=>{
+  startRideJourney();
+});
 
 /* RIDE MODE EVENTS */
 function openRideMode(){
@@ -2807,6 +2834,9 @@ function closeRideMode(){
     cancelAnimationFrame(rideJourneyFrame);
     rideJourneyFrame=null;
   }
+  rideOverlay.classList.remove("journeyComplete");
+  rideComplete.classList.remove("show");
+  rideComplete.setAttribute("aria-hidden","true");
   rideOverlay.classList.remove("open");
   rideOverlay.setAttribute("aria-hidden","true");
   document.body.style.overflow="";
@@ -2821,8 +2851,6 @@ rideOverlay.addEventListener("click",e=>{
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape" && rideOverlay.classList.contains("open")) closeRideMode();
 });
-
-/* STEP 6: final polish state */
 
 </script>
 </body>
