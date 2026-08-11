@@ -1,22 +1,1232 @@
-<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ऑटो वाला</title>
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ऑटो वाला 🚕</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;overflow-x:hidden;font-family:Arial,"Noto Sans Devanagari",sans-serif;color:#fff;background:linear-gradient(180deg,#173d73,#2a5d91 48%,#b93627 78%,#641c20);padding-bottom:150px}
-header{display:flex;justify-content:space-between;padding:24px 28px;font-weight:700}.live{position:absolute;left:50%;transform:translateX(-50%)}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#43e779;box-shadow:0 0 10px #43e779;margin-right:7px}
-h1{text-align:center;font-size:clamp(52px,8vw,88px);margin:65px 0 10px;font-weight:900}.hero{text-align:center;height:390px;position:relative}.auto{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:520px;max-width:85vw;height:260px;filter:drop-shadow(0 20px 20px #0008)}.roof{position:absolute;left:160px;top:10px;width:220px;height:105px;background:#d68c2c;border:5px solid #efad45;border-bottom:0;border-radius:25px}.cab{position:absolute;left:130px;top:80px;width:300px;height:130px;background:#17201d;border:5px solid #28302c;border-radius:10px 35px 18px 8px}.win{position:absolute;top:95px;width:82px;height:60px;background:#416a78;border:4px solid #101919}.w1{left:185px}.w2{left:280px}.front{position:absolute;right:5px;top:80px;width:145px;height:130px;background:#b84a23;border:5px solid #7d2c1c;border-radius:20px 35px 15px 5px}.base{position:absolute;left:50px;top:145px;width:440px;height:85px;background:#111716;border-radius:6px 20px 20px 30px}.wheel{position:absolute;bottom:0;width:70px;height:70px;border-radius:50%;background:#080909;border:12px solid #292929}.a{left:85px}.b{right:55px}.tag{font-weight:800;text-shadow:0 2px 5px #000;font-size:20px}.sound{position:fixed;left:25px;bottom:125px;border:1px solid #fff9;border-radius:15px;padding:10px 15px;background:#173d7355;cursor:pointer}
-.list{width:min(760px,92%);margin:10px auto}.song{display:flex;align-items:center;gap:14px;background:#321d1d99;padding:12px;border-radius:15px;margin:8px 0;cursor:pointer}.cover{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,#e1b24b,#30200d 45%,#d18c29 46%,#17100a 65%);flex:none}.meta{flex:1;min-width:0}.title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.artist{font-size:13px;opacity:.8}.play{border:0;border-radius:50%;width:40px;height:40px;cursor:pointer}.player{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);width:min(620px,92%);background:#6e2b27dd;backdrop-filter:blur(12px);border:1px solid #fff3;border-radius:45px;padding:10px 16px;display:flex;align-items:center;gap:12px;z-index:5}.player .cover{width:55px;height:55px}.info{flex:1;min-width:0}.controls{display:flex;gap:12px;align-items:center}.controls button{border:0;background:transparent;color:#fff;font-size:20px;cursor:pointer}.main{background:#fff;color:#333;border-radius:50%;width:42px;height:42px}.progress{width:100%;margin-top:6px}
-@media(max-width:600px){.live{font-size:11px}h1{margin-top:75px}.hero{height:330px}.auto{transform:translate(-50%,-50%) scale(.72)}.sound{bottom:105px}.player{bottom:10px}.controls span{display:none}}
-</style></head><body>
-<header><span>8:15 am</span><span class="live"><i class="dot"></i><b id="count">587</b> on the highway</span><span>•••</span></header>
-<h1>ऑटो वाला</h1><section class="hero"><div class="auto"><div class="roof"></div><div class="cab"></div><div class="win w1"></div><div class="win w2"></div><div class="front"></div><div class="base"></div><div class="wheel a"></div><div class="wheel b"></div></div><div class="tag">जो डर गया, समझो मर गया</div></section>
-<div class="sound">🔊 हॉर्न ओके प्लीज</div><section class="list" id="list"></section>
-<div class="player"><div class="cover" id="pcover"></div><div class="info"><div class="title" id="ptitle">अपना गाना चुनें</div><div class="artist" id="partist">Auto Wala</div><audio id="audio" controls class="progress"></audio></div><div class="controls"><button onclick="prev()">‹</button><button class="main" onclick="toggle()">▶</button><button onclick="next()">›</button></div></div>
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  color:#fff;
+  font-family:Arial,"Noto Sans Devanagari",sans-serif;
+  background:
+    radial-gradient(circle at 50% 20%,#376da0 0,#1d4775 30%,transparent 55%),
+    linear-gradient(180deg,#102d52,#214f7d 50%,#a9362a 78%,#59191e);
+  overflow-x:hidden;
+  padding-bottom:150px;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 10%,#ffffff12 0 2px,transparent 3px),
+    radial-gradient(circle at 80% 30%,#ffffff0d 0 2px,transparent 3px);
+  background-size:80px 80px;
+  opacity:.5;
+}
+
+/* HEADER */
+
+header{
+  position:relative;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 24px;
+  font-weight:700;
+}
+
+.clock{
+  font-size:14px;
+  font-variant-numeric:tabular-nums;
+}
+
+.live{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font-size:14px;
+}
+
+.dot{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  margin-right:7px;
+  border-radius:50%;
+  background:#43e779;
+  box-shadow:0 0 12px #43e779;
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.45;transform:scale(.75)}
+}
+
+/* HERO */
+
+.heroTitle{
+  text-align:center;
+  margin-top:45px;
+}
+
+.heroTitle h1{
+  margin:0;
+  font-size:clamp(55px,10vw,100px);
+  font-weight:1000;
+  letter-spacing:-4px;
+  text-shadow:0 8px 25px #0007;
+}
+
+.heroTitle p{
+  margin:8px 0 0;
+  font-size:16px;
+  opacity:.8;
+}
+
+.hero{
+  height:390px;
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.auto{
+  position:relative;
+  width:520px;
+  height:260px;
+  transform:scale(.9);
+  filter:drop-shadow(0 25px 25px #0009);
+  animation:floatAuto 4s ease-in-out infinite;
+}
+
+@keyframes floatAuto{
+  0%,100%{transform:translateY(0) scale(.9)}
+  50%{transform:translateY(-8px) scale(.9)}
+}
+
+.roof{
+  position:absolute;
+  left:160px;
+  top:10px;
+  width:220px;
+  height:105px;
+  background:#d68c2c;
+  border:5px solid #efad45;
+  border-bottom:0;
+  border-radius:25px;
+}
+
+.cab{
+  position:absolute;
+  left:130px;
+  top:80px;
+  width:300px;
+  height:130px;
+  background:#17201d;
+  border:5px solid #28302c;
+  border-radius:10px 35px 18px 8px;
+}
+
+.win{
+  position:absolute;
+  top:95px;
+  width:82px;
+  height:60px;
+  background:linear-gradient(135deg,#578b9d,#294854);
+  border:4px solid #101919;
+}
+
+.w1{left:185px}
+.w2{left:280px}
+
+.front{
+  position:absolute;
+  right:5px;
+  top:80px;
+  width:145px;
+  height:130px;
+  background:#b84a23;
+  border:5px solid #7d2c1c;
+  border-radius:20px 35px 15px 5px;
+}
+
+.base{
+  position:absolute;
+  left:50px;
+  top:145px;
+  width:440px;
+  height:85px;
+  background:#111716;
+  border-radius:6px 20px 20px 30px;
+}
+
+.wheel{
+  position:absolute;
+  bottom:0;
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:#080909;
+  border:12px solid #292929;
+  box-shadow:inset 0 0 0 4px #111;
+}
+
+.a{left:85px}
+.b{right:55px}
+
+.tag{
+  position:absolute;
+  bottom:10px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-size:20px;
+  font-weight:800;
+  text-shadow:0 3px 8px #000;
+}
+
+/* SEARCH */
+
+.searchBox{
+  width:min(760px,92%);
+  margin:0 auto 25px;
+  position:relative;
+}
+
+.searchBox input{
+  width:100%;
+  padding:16px 20px 16px 48px;
+  border:1px solid #ffffff25;
+  border-radius:18px;
+  outline:none;
+  color:#fff;
+  background:#ffffff12;
+  backdrop-filter:blur(15px);
+  font-size:15px;
+}
+
+.searchBox input::placeholder{
+  color:#ffffff99;
+}
+
+.searchIcon{
+  position:absolute;
+  left:17px;
+  top:14px;
+  font-size:20px;
+}
+
+/* SONG LIST */
+
+.section{
+  width:min(760px,92%);
+  margin:0 auto;
+}
+
+.sectionTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:18px 0 10px;
+}
+
+.sectionTitle h2{
+  margin:0;
+  font-size:22px;
+}
+
+.sectionTitle span{
+  font-size:12px;
+  opacity:.65;
+}
+
+.song{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:13px;
+  margin:9px 0;
+  border:1px solid #ffffff12;
+  border-radius:18px;
+  background:#24191c88;
+  backdrop-filter:blur(12px);
+  cursor:pointer;
+  transition:.22s;
+}
+
+.song:hover{
+  transform:translateY(-3px);
+  background:#ffffff14;
+  border-color:#ffffff25;
+}
+
+.cover{
+  width:54px;
+  height:54px;
+  flex:none;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,#f1c55d 0 18%,#3b2810 19% 40%,#d18c29 41% 47%,#17100a 48% 70%,#8c5c1b 71%);
+  box-shadow:0 5px 15px #0006;
+}
+
+.meta{
+  flex:1;
+  min-width:0;
+}
+
+.title{
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.artist{
+  margin-top:4px;
+  font-size:13px;
+  opacity:.65;
+}
+
+.playBtn,
+.favBtn{
+  width:40px;
+  height:40px;
+  flex:none;
+  border:0;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.playBtn{
+  background:#fff;
+  color:#111;
+}
+
+.favBtn{
+  background:#ffffff10;
+  color:#fff;
+}
+
+/* PLAYER */
+
+.player{
+  position:fixed;
+  left:50%;
+  bottom:15px;
+  transform:translateX(-50%);
+  z-index:20;
+
+  width:min(700px,94%);
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  padding:11px 15px;
+
+  border:1px solid #ffffff25;
+  border-radius:30px;
+
+  background:#3c1c1ddd;
+  backdrop-filter:blur(20px);
+
+  box-shadow:
+    0 20px 50px #0008,
+    inset 0 1px #fff2;
+}
+
+.player .cover{
+  width:54px;
+  height:54px;
+}
+
+.playerInfo{
+  flex:1;
+  min-width:0;
+}
+
+.playerTitle{
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.playerArtist{
+  font-size:12px;
+  opacity:.6;
+  margin-top:3px;
+}
+
+audio{
+  width:100%;
+  height:32px;
+  margin-top:4px;
+}
+
+.controls{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.controls button{
+  border:0;
+  background:transparent;
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.mainBtn{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:#fff!important;
+  color:#111!important;
+  font-size:17px!important;
+}
+
+/* EXTRA */
+
+.horn{
+  position:fixed;
+  left:18px;
+  bottom:125px;
+  z-index:15;
+  padding:10px 15px;
+  border:1px solid #ffffff25;
+  border-radius:15px;
+  color:#fff;
+  background:#173d7380;
+  backdrop-filter:blur(10px);
+  cursor:pointer;
+}
+
+.onlineBox{
+  position:fixed;
+  right:18px;
+  bottom:125px;
+  z-index:15;
+  padding:10px 14px;
+  border:1px solid #ffffff25;
+  border-radius:15px;
+  background:#173d7380;
+  backdrop-filter:blur(10px);
+  font-size:12px;
+}
+
+.empty{
+  text-align:center;
+  padding:30px;
+  opacity:.6;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+  header{
+    padding:15px 12px;
+  }
+
+  .clock{
+    font-size:11px;
+  }
+
+  .live{
+    font-size:10px;
+  }
+
+  header>span:last-child{
+    display:none;
+  }
+
+  .heroTitle{
+    margin-top:55px;
+  }
+
+  .heroTitle h1{
+    font-size:58px;
+    letter-spacing:-3px;
+  }
+
+  .heroTitle p{
+    font-size:13px;
+  }
+
+  .hero{
+    height:330px;
+  }
+
+  .auto{
+    transform:scale(.67);
+  }
+
+  @keyframes floatAuto{
+    0%,100%{transform:translateY(0) scale(.67)}
+    50%{transform:translateY(-7px) scale(.67)}
+  }
+
+  .tag{
+    font-size:16px;
+  }
+
+  .searchBox{
+    margin-bottom:20px;
+  }
+
+  .song{
+    padding:10px;
+  }
+
+  .cover{
+    width:48px;
+    height:48px;
+  }
+
+  .favBtn{
+    display:none;
+  }
+
+  .player{
+    bottom:7px;
+    padding:8px 10px;
+    border-radius:25px;
+  }
+
+  .player .cover{
+    width:43px;
+    height:43px;
+  }
+
+  .controls{
+    gap:0;
+  }
+
+  .controls button{
+    font-size:18px;
+  }
+
+  .mainBtn{
+    width:38px;
+    height:38px;
+  }
+
+  .horn{
+    bottom:105px;
+    left:8px;
+    font-size:11px;
+  }
+
+  .onlineBox{
+    bottom:105px;
+    right:8px;
+    font-size:10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <span class="clock" id="clock">
+    --:--:--
+  </span>
+
+  <span class="live">
+    <i class="dot"></i>
+    <b id="count">1</b>
+    on the highway
+  </span>
+
+  <span>•••</span>
+
+</header>
+
+<section class="heroTitle">
+
+  <h1>ऑटो वाला</h1>
+
+  <p>
+    🎵 सफर अपना, गाना अपना
+  </p>
+
+</section>
+
+<section class="hero">
+
+  <div class="auto">
+
+    <div class="roof"></div>
+
+    <div class="cab"></div>
+
+    <div class="win w1"></div>
+
+    <div class="win w2"></div>
+
+    <div class="front"></div>
+
+    <div class="base"></div>
+
+    <div class="wheel a"></div>
+
+    <div class="wheel b"></div>
+
+  </div>
+
+  <div class="tag">
+    जो डर गया, समझो मर गया 😎
+  </div>
+
+</section>
+
+<div class="searchBox">
+
+  <span class="searchIcon">🔍</span>
+
+  <input
+    id="search"
+    placeholder="गाना या कलाकार खोजें..."
+    autocomplete="off"
+  >
+
+</div>
+
+<section class="section">
+
+  <div class="sectionTitle">
+
+    <h2>🎵 गाने</h2>
+
+    <span id="songCount">
+      0 songs
+    </span>
+
+  </div>
+
+  <div id="list"></div>
+
+</section>
+
+<button class="horn" id="horn">
+  🔊 हॉर्न ओके प्लीज
+</button>
+
+<div class="onlineBox">
+  🟢 <span id="onlineText">Live</span>
+</div>
+
+<div class="player">
+
+  <div
+    class="cover"
+    id="pcover"
+  ></div>
+
+  <div class="playerInfo">
+
+    <div
+      class="playerTitle"
+      id="ptitle"
+    >
+      अपना गाना चुनें
+    </div>
+
+    <div
+      class="playerArtist"
+      id="partist"
+    >
+      Auto Wala
+    </div>
+
+    <audio
+      id="audio"
+      controls
+    ></audio>
+
+  </div>
+
+  <div class="controls">
+
+    <button onclick="prev()">
+      ‹
+    </button>
+
+    <button
+      class="mainBtn"
+      id="mainBtn"
+      onclick="toggle()"
+    >
+      ▶
+    </button>
+
+    <button onclick="next()">
+      ›
+    </button>
+
+  </div>
+
+</div>
+
 <script>
-let songs=[],idx=-1;const audio=document.getElementById('audio');
-async function load(){songs=await fetch('/api/songs').then(r=>r.json());render()}
-function render(){list.innerHTML=songs.map((s,i)=>`<div class="song" onclick="play(${i})"><div class="cover" ${s.cover?`style="background:url('${s.cover}') center/cover"`:''}></div><div class="meta"><div class="title">${esc(s.title)}</div><div class="artist">${esc(s.artist)}</div></div><button class="play">▶</button></div>`).join('')}
-function esc(x){return String(x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function play(i){idx=i;let s=songs[i];audio.src=s.audio;ptitle.textContent=s.title;partist.textContent=s.artist;pcover.style.background=s.cover?`url('${s.cover}') center/cover`:"";audio.play()}
-function toggle(){if(!audio.src&&songs[0])return play(0);audio.paused?audio.play():audio.pause()}
-function next(){if(songs.length)play((idx+1)%songs.length)}function prev(){if(songs.length)play((idx-1+songs.length)%songs.length)}audio.onended=next;
-setInterval(()=>count.textContent=587+Math.floor(Math.random()*9),3000);load();
-</script></body></html>
+
+let songs=[];
+
+let filteredSongs=[];
+
+let idx=-1;
+
+const audio=
+document.getElementById("audio");
+
+
+/* VISITOR ID */
+
+const visitorId=
+localStorage.getItem(
+  "autoWalaVisitor"
+) ||
+(
+  "visitor-" +
+  Date.now() +
+  "-" +
+  Math.random()
+    .toString(36)
+    .slice(2)
+);
+
+localStorage.setItem(
+  "autoWalaVisitor",
+  visitorId
+);
+
+
+/* LIVE CLOCK */
+
+function updateClock(){
+
+  const now=
+  new Date();
+
+  const time=
+  new Intl.DateTimeFormat(
+    "en-IN",
+    {
+      timeZone:"Asia/Kolkata",
+      hour:"numeric",
+      minute:"2-digit",
+      second:"2-digit",
+      hour12:true
+    }
+  ).format(now);
+
+  document.getElementById(
+    "clock"
+  ).textContent=time;
+
+}
+
+updateClock();
+
+setInterval(
+  updateClock,
+  1000
+);
+
+
+/* ONLINE */
+
+async function heartbeat(){
+
+  try{
+
+    const response=
+    await fetch(
+      "/api/heartbeat",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":
+          "application/json"
+        },
+        body:JSON.stringify({
+          visitorId
+        })
+      }
+    );
+
+    if(!response.ok)
+      return;
+
+    const data=
+    await response.json();
+
+    document.getElementById(
+      "count"
+    ).textContent=data.online;
+
+    document.getElementById(
+      "onlineText"
+    ).textContent=
+      data.online+
+      " online";
+
+  }catch(error){
+
+    document.getElementById(
+      "onlineText"
+    ).textContent=
+      "Live";
+
+  }
+
+}
+
+heartbeat();
+
+setInterval(
+  heartbeat,
+  30000
+);
+
+
+/* VISIT */
+
+fetch(
+  "/api/visit",
+  {
+    method:"POST",
+    headers:{
+      "Content-Type":
+      "application/json"
+    },
+    body:JSON.stringify({
+      visitorId
+    })
+  }
+).catch(()=>{});
+
+
+/* LOAD SONGS */
+
+async function load(){
+
+  try{
+
+    const response=
+    await fetch(
+      "/api/songs"
+    );
+
+    songs=
+    await response.json();
+
+    filteredSongs=
+    [...songs];
+
+    render();
+
+  }catch(error){
+
+    document.getElementById(
+      "list"
+    ).innerHTML=
+      `<div class="empty">
+        Songs load नहीं हो पाए 😕
+      </div>`;
+
+  }
+
+}
+
+
+/* RENDER */
+
+function render(){
+
+  const box=
+  document.getElementById(
+    "list"
+  );
+
+  document.getElementById(
+    "songCount"
+  ).textContent=
+    filteredSongs.length+
+    " songs";
+
+
+  if(!filteredSongs.length){
+
+    box.innerHTML=
+      `<div class="empty">
+        कोई गाना नहीं मिला 😕
+      </div>`;
+
+    return;
+
+  }
+
+
+  box.innerHTML=
+  filteredSongs
+  .map(
+    (song,i)=>`
+
+      <div
+        class="song"
+        onclick="play(${i})"
+      >
+
+        <div
+          class="cover"
+          ${
+            song.cover
+            ?
+            `style="background:url('${song.cover}') center/cover"`
+            :
+            ""
+          }
+        ></div>
+
+
+        <div class="meta">
+
+          <div class="title">
+            ${esc(song.title)}
+          </div>
+
+          <div class="artist">
+            ${esc(song.artist)}
+          </div>
+
+        </div>
+
+
+        <button
+          class="favBtn"
+          onclick="event.stopPropagation();favorite('${song.id}')"
+        >
+          ♡
+        </button>
+
+
+        <button
+          class="playBtn"
+          onclick="event.stopPropagation();play(${i})"
+        >
+          ▶
+        </button>
+
+      </div>
+
+    `
+  )
+  .join("");
+
+}
+
+
+/* SEARCH */
+
+document
+.getElementById("search")
+.addEventListener(
+  "input",
+  function(){
+
+    const query=
+    this.value
+      .trim()
+      .toLowerCase();
+
+
+    filteredSongs=
+    songs.filter(
+      song=>
+        String(song.title)
+          .toLowerCase()
+          .includes(query)
+        ||
+        String(song.artist)
+          .toLowerCase()
+          .includes(query)
+    );
+
+
+    render();
+
+  }
+);
+
+
+/* PLAY */
+
+async function play(i){
+
+  if(
+    !filteredSongs[i]
+  )
+    return;
+
+
+  const song=
+  filteredSongs[i];
+
+  idx=i;
+
+
+  audio.src=
+    song.audio;
+
+
+  document.getElementById(
+    "ptitle"
+  ).textContent=
+    song.title;
+
+
+  document.getElementById(
+    "partist"
+  ).textContent=
+    song.artist;
+
+
+  document.getElementById(
+    "pcover"
+  ).style.background=
+    song.cover
+    ?
+    `url('${song.cover}') center/cover`
+    :
+    "";
+
+
+  try{
+
+    await audio.play();
+
+  }catch(error){}
+
+
+  /*
+    Analytics endpoint exists
+    in the upgraded backend.
+    If old backend is being used,
+    this simply fails silently.
+  */
+
+  fetch(
+    "/api/play",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":
+        "application/json"
+      },
+      body:JSON.stringify({
+        songId:song.id
+      })
+    }
+  ).catch(()=>{});
+
+}
+
+
+/* TOGGLE */
+
+function toggle(){
+
+  if(
+    !audio.src &&
+    filteredSongs.length
+  ){
+
+    play(0);
+
+    return;
+
+  }
+
+
+  if(audio.paused){
+
+    audio.play();
+
+  }else{
+
+    audio.pause();
+
+  }
+
+}
+
+
+/* NEXT */
+
+function next(){
+
+  if(
+    !filteredSongs.length
+  )
+    return;
+
+
+  idx=
+    (idx+1)
+    %
+    filteredSongs.length;
+
+
+  play(idx);
+
+}
+
+
+/* PREVIOUS */
+
+function prev(){
+
+  if(
+    !filteredSongs.length
+  )
+    return;
+
+
+  idx=
+    (idx-1+
+      filteredSongs.length)
+    %
+    filteredSongs.length;
+
+
+  play(idx);
+
+}
+
+
+/* AUDIO EVENTS */
+
+audio.onended=
+  next;
+
+
+audio.onplay=
+  ()=>{
+    document.getElementById(
+      "mainBtn"
+    ).textContent="❚❚";
+  };
+
+
+audio.onpause=
+  ()=>{
+    document.getElementById(
+      "mainBtn"
+    ).textContent="▶";
+  };
+
+
+/* FAVORITE */
+
+function favorite(id){
+
+  let favorites=
+    JSON.parse(
+      localStorage.getItem(
+        "autoWalaFavorites"
+      ) ||
+      "[]"
+    );
+
+
+  if(
+    favorites.includes(id)
+  ){
+
+    favorites=
+      favorites.filter(
+        x=>x!==id
+      );
+
+  }else{
+
+    favorites.push(id);
+
+  }
+
+
+  localStorage.setItem(
+    "autoWalaFavorites",
+    JSON.stringify(
+      favorites
+    )
+  );
+
+}
+
+
+/* HORN */
+
+document
+.getElementById("horn")
+.addEventListener(
+  "click",
+  ()=>{
+    alert(
+      "📢 हॉर्न ओके प्लीज 😎"
+    );
+  }
+);
+
+
+/* ESCAPE */
+
+function esc(text){
+
+  return String(
+    text || ""
+  ).replace(
+    /[&<>"']/g,
+    m=>
+      ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+      }[m])
+  );
+
+}
+
+
+load();
+
+</script>
+
+</body>
+</html>
