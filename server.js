@@ -1,7 +1,7 @@
 const express=require("express"); const path=require("path");
 const multer=require("multer");
 const fs=require("fs");
-const path=require("path");
+
 const app=express(); app.use("/admin",express.static(path.join(__dirname,"admin")));
 const PORT=process.env.PORT||3000;
 const ADMIN_PASSWORD=process.env.ADMIN_PASSWORD||"change-this-password";
