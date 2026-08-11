@@ -2576,35 +2576,6 @@ const rideModeBtn=document.getElementById("rideModeBtn");
 const rideOverlay=document.getElementById("rideOverlay");
 const rideClose=document.getElementById("rideClose");
 
-function openRideMode(){
-  rideOverlay.classList.add("open");
-  startRideJourney();
-  if(!audio.paused) startRidePulse();
-  rideOverlay.setAttribute("aria-hidden","false");
-  document.body.style.overflow="hidden";
-}
-
-function closeRideMode(){
-  if(rideJourneyFrame){cancelAnimationFrame(rideJourneyFrame);rideJourneyFrame=null;}
-  rideComplete.classList.remove("show");
-  rideComplete.setAttribute("aria-hidden","true");
-  rideOverlay.classList.remove("journeyComplete");
-  rideOverlay.classList.remove("open");
-  stopRidePulse();
-  rideOverlay.setAttribute("aria-hidden","true");
-  document.body.style.overflow="";
-}
-
-rideModeBtn.addEventListener("click",openRideMode);
-rideClose.addEventListener("click",closeRideMode);
-rideOverlay.addEventListener("click",e=>{
-  if(e.target===rideOverlay) closeRideMode();
-});
-document.addEventListener("keydown",e=>{
-  if(e.key==="Escape" && rideOverlay.classList.contains("open")) closeRideMode();
-});
-
-
 /* RIDE MODE — STEP 3: MUSIC SYNC */
 let rideAudioContext=null;
 let rideAnalyser=null;
@@ -2784,6 +2755,7 @@ const rideProgressFill=document.getElementById("rideProgressFill");
 const rideComplete=document.getElementById("rideComplete");
 const rideCompleteTime=document.getElementById("rideCompleteTime");
 const rideCompleteDistance=document.getElementById("rideCompleteDistance");
+const rideCompleteText=document.getElementById("rideCompleteText");
 const rideFinishBtn=document.getElementById("rideFinishBtn");
 
 const rideDestinations=[
@@ -2862,11 +2834,18 @@ function openRideMode(){
   rideOverlay.classList.add("open");
   rideOverlay.setAttribute("aria-hidden","false");
   document.body.style.overflow="hidden";
-
+  startRideJourney();
   if(!audio.paused) startRidePulse();
 }
 
 function closeRideMode(){
+  if(rideJourneyFrame){
+    cancelAnimationFrame(rideJourneyFrame);
+    rideJourneyFrame=null;
+  }
+  rideOverlay.classList.remove("journeyComplete");
+  rideComplete.classList.remove("show");
+  rideComplete.setAttribute("aria-hidden","true");
   rideOverlay.classList.remove("open");
   rideOverlay.setAttribute("aria-hidden","true");
   document.body.style.overflow="";
