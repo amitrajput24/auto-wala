@@ -1794,6 +1794,39 @@ audio{
   .rideStat{min-width:82px}
 }
 
+
+/* RIDE MODE — STEP 6: FINAL POLISH */
+.rideOverlay{
+  transition:background .65s ease,opacity .35s ease;
+  isolation:isolate;
+}
+.rideOverlay.open{animation:rideReveal .45s cubic-bezier(.22,.8,.25,1) both;}
+.rideOverlay .rideSky,.rideOverlay .rideGlow,.rideOverlay .rideRoad,.rideOverlay .rideCity,.rideOverlay .rideTraffic{transition:filter .6s ease,opacity .45s ease,transform .6s ease;}
+.ridePanel,.rideJourney,.rideMoodBar,.rideStatus,.rideClose{transition:transform .45s cubic-bezier(.22,.8,.25,1),opacity .35s ease,background .45s ease,border-color .45s ease;}
+.rideOverlay.open .ridePanel{animation:ridePanelIn .55s .04s both;}
+.rideOverlay.open .rideJourney{animation:ridePanelIn .55s .08s both;}
+.rideOverlay.open .rideMoodBar{animation:ridePanelIn .55s .12s both;}
+.rideOverlay.open .rideStatus{animation:ridePanelIn .55s .18s both;}
+.rideOverlay.journeyComplete .rideAuto{animation:rideFinishAuto .9s cubic-bezier(.2,.85,.25,1) both;}
+.rideOverlay.journeyComplete .ridePanel,.rideOverlay.journeyComplete .rideMoodBar,.rideOverlay.journeyComplete .rideJourney,.rideOverlay.journeyComplete .rideStatus{opacity:.18;filter:blur(2px);}
+.rideComplete.show .rideCompleteCard{animation:rideCompleteIn .55s cubic-bezier(.18,.9,.25,1) both;}
+.rideComplete.show .rideCompleteIcon{animation:rideFlagPop .7s .12s both;}
+.rideMood.active{box-shadow:0 0 0 1px var(--moodAccent),0 8px 24px color-mix(in srgb,var(--moodGlow) 25%,transparent);}
+@keyframes rideReveal{from{opacity:0;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
+@keyframes ridePanelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes rideFinishAuto{0%{transform:translateY(0) scale(1)}45%{transform:translateY(-10px) scale(1.06)}100%{transform:translateY(0) scale(.94)}}
+@keyframes rideCompleteIn{from{opacity:0;transform:translateY(22px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes rideFlagPop{0%{transform:scale(.55) rotate(-12deg)}65%{transform:scale(1.12) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+@media(max-width:600px){
+  .rideJourney{width:170px;padding:10px 12px;top:14px;left:12px;}
+  .rideMoodBar{gap:6px;}
+  .rideMood{min-width:70px;}
+  .rideCompleteCard{width:min(88vw,360px);padding:24px 18px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .rideOverlay,.rideOverlay *{animation:none!important;transition:none!important;}
+}
+
 </style>
 </head>
 
@@ -2850,6 +2883,12 @@ rideOverlay.addEventListener("click",e=>{
 });
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape" && rideOverlay.classList.contains("open")) closeRideMode();
+});
+
+/* STEP 6: final polish state */
+const rideOverlayOriginalOpen=rideOverlay.classList.contains("open");
+rideOverlay.addEventListener("transitionend",()=>{
+  if(!rideOverlay.classList.contains("open")) rideOverlay.classList.remove("journeyComplete");
 });
 
 </script>
