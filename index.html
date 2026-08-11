@@ -1293,7 +1293,7 @@ audio{
 }
 
 
-/* RIDE MODE — STEP 1 */
+/* RIDE MODE — STEP 2 */
 .rideModeBtn{
   position:relative;
   z-index:4;
@@ -1361,6 +1361,94 @@ audio{
   background:radial-gradient(ellipse,#4e93c51c,transparent 68%);
   filter:blur(10px);
 }
+
+.rideCity{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:31%;
+  height:30%;
+  z-index:1;
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  padding:0 2vw;
+  overflow:hidden;
+  opacity:.82;
+}
+.rideCity span{
+  position:relative;
+  flex:0 0 clamp(44px,6vw,92px);
+  height:var(--h);
+  border:1px solid #ffffff08;
+  border-bottom:0;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 12px,#f6d86a18 12px 16px,transparent 16px 25px),
+    repeating-linear-gradient(180deg,#ffffff0d 0 10px,transparent 10px 19px),
+    linear-gradient(180deg,#182735,#0b1118);
+  box-shadow:0 -12px 35px #0005;
+}
+.rideCity span:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:5px;
+  background:#7fb7d61a;
+}
+.rideCity span:nth-child(2n){flex-basis:clamp(55px,8vw,115px)}
+.rideCity span:nth-child(3n){flex-basis:clamp(38px,5vw,76px)}
+.rideTraffic{
+  position:absolute;
+  z-index:2;
+  left:0;
+  right:0;
+  bottom:19%;
+  height:26px;
+  overflow:hidden;
+  opacity:.65;
+}
+.rideTraffic:before,.rideTraffic:after{
+  content:"";
+  position:absolute;
+  top:10px;
+  width:14px;
+  height:5px;
+  border-radius:50%;
+  background:#ffd85c;
+  box-shadow:0 0 12px #ffd85c99;
+  animation:rideTrafficMove 5s linear infinite;
+}
+.rideTraffic:after{
+  top:17px;
+  width:11px;
+  height:4px;
+  background:#ff5d5d;
+  box-shadow:0 0 12px #ff5d5d88;
+  animation-duration:7s;
+  animation-delay:-2.5s;
+}
+@keyframes rideTrafficMove{
+  from{transform:translateX(-80px)}
+  to{transform:translateX(calc(100vw + 80px))}
+}
+.rideRoad:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(180deg,transparent 0 28px,#ffffff18 28px 32px,transparent 32px 76px);
+  transform:translateY(-20%);
+  animation:rideRoadFlow 1.4s linear infinite;
+}
+@keyframes rideRoadFlow{
+  from{transform:translateY(-80px)}
+  to{transform:translateY(80px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .rideTraffic:before,.rideTraffic:after,.rideRoad:before{animation:none}
+}
+
 .rideRoad{
   position:absolute;
   left:-10%;
@@ -1568,6 +1656,18 @@ audio{
   <div class="rideSky"></div>
   <div class="rideGlow"></div>
   <div class="rideRoad"></div>
+  <div class="rideCity" aria-hidden="true">
+    <span style="--h:62%"></span>
+    <span style="--h:84%"></span>
+    <span style="--h:52%"></span>
+    <span style="--h:72%"></span>
+    <span style="--h:94%"></span>
+    <span style="--h:58%"></span>
+    <span style="--h:78%"></span>
+    <span style="--h:48%"></span>
+    <span style="--h:68%"></span>
+  </div>
+  <div class="rideTraffic" aria-hidden="true"></div>
 
   <div class="ridePanel">
     <div class="rideEyebrow">AUTO WALA • RIDE MODE</div>
@@ -2191,7 +2291,7 @@ load();
 
 
 
-/* RIDE MODE — STEP 1 */
+/* RIDE MODE — STEP 2 */
 const rideModeBtn=document.getElementById("rideModeBtn");
 const rideOverlay=document.getElementById("rideOverlay");
 const rideClose=document.getElementById("rideClose");
