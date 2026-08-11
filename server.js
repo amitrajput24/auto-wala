@@ -1,4 +1,3 @@
-```js
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
@@ -8,923 +7,879 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const ADMIN_PASSWORD =
-  process.env.ADMIN_PASSWORD || "change-this-password";
+process.env.ADMIN_PASSWORD || "change-this-password";
 
 const SUPABASE_URL =
-  (process.env.SUPABASE_URL || "").replace(/\/+$/, "");
+(process.env.SUPABASE_URL || "").replace(//+$/, "");
 
 const SUPABASE_SERVICE_KEY =
-  process.env.SUPABASE_SERVICE_KEY || "";
+process.env.SUPABASE_SERVICE_KEY || "";
 
 const SUPABASE_BUCKET = "songs";
 
 /* =========================
-   CHECK ENVIRONMENT
+CHECK ENVIRONMENT
 ========================= */
 
 if (!SUPABASE_URL) {
-  console.error("❌ SUPABASE_URL missing");
+console.error("❌ SUPABASE_URL missing");
 }
 
 if (!SUPABASE_SERVICE_KEY) {
-  console.error("❌ SUPABASE_SERVICE_KEY missing");
+console.error("❌ SUPABASE_SERVICE_KEY missing");
 }
 
 /* =========================
-   EXPRESS
+EXPRESS
 ========================= */
 
 app.use(
-  express.json({
-    limit: "2mb"
-  })
+express.json({
+limit: "2mb",
+})
 );
 
 app.use(
-  express.urlencoded({
-    extended: true
-  })
+express.urlencoded({
+extended: true,
+})
 );
 
 /* =========================
-   STATIC FILES
+STATIC FILES
 ========================= */
 
 app.use(
-  express.static(
-    path.join(__dirname, "public")
-  )
+express.static(
+path.join(__dirname, "public")
+)
 );
 
 app.use(
-  "/admin",
-  express.static(
-    path.join(__dirname, "admin")
-  )
+"/admin",
+express.static(
+path.join(__dirname, "admin")
+)
 );
 
 /* =========================
-   HOME
+HOME
 ========================= */
 
 app.get("/", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "index.html")
-  );
+res.sendFile(
+path.join(__dirname, "index.html")
+);
 });
 
 /* =========================
-   MULTER
+MULTER
 ========================= */
 
 const upload = multer({
-  storage: multer.memoryStorage(),
+storage: multer.memoryStorage(),
 
-  limits: {
-    files: 50,
-    fileSize: 100 * 1024 * 1024
-  },
+limits: {
+files: 50,
+fileSize: 100 * 1024 * 1024,
+},
 
-  fileFilter: (req, file, cb) => {
-    const allowed =
-      /audio\/|\.mp3$|\.wav$|\.m4a$|\.ogg$|\.aac$/i;
+fileFilter: (req, file, cb) => {
+const allowed =
+/audio/|.mp3$|.wav$|.m4a$|.ogg$|.aac$/i;
 
-    if (
-      allowed.test(
-        file.mimetype +
-        " " +
-        file.originalname
-      )
-    ) {
-      cb(null, true);
-    } else {
-      cb(
-        new Error(
-          "Only audio files are allowed"
-        )
-      );
-    }
-  }
+```
+if (
+  allowed.test(
+    file.mimetype +
+      " " +
+      file.originalname
+  )
+) {
+  cb(null, true);
+} else {
+  cb(
+    new Error(
+      "Only audio files are allowed"
+    )
+  );
+}
+```
+
+},
 });
 
 /* =========================
-   SUPABASE REQUEST
+SUPABASE REQUEST
 ========================= */
 
 async function supabaseRequest(
-  endpoint,
-  options = {}
+endpoint,
+options = {}
 ) {
-  if (
-    !SUPABASE_URL ||
-    !SUPABASE_SERVICE_KEY
-  ) {
-    throw new Error(
-      "Supabase environment variables are missing"
-    );
-  }
+if (
+!SUPABASE_URL ||
+!SUPABASE_SERVICE_KEY
+) {
+throw new Error(
+"Supabase environment variables are missing"
+);
+}
 
-  const response = await fetch(
-    SUPABASE_URL + endpoint,
-    {
-      ...options,
+const response = await fetch(
+SUPABASE_URL + endpoint,
+{
+...options,
 
-      headers: {
-        apikey:
-          SUPABASE_SERVICE_KEY,
+```
+  headers: {
+    apikey: SUPABASE_SERVICE_KEY,
 
-        Authorization:
-          "Bearer " +
-          SUPABASE_SERVICE_KEY,
+    Authorization:
+      "Bearer " +
+      SUPABASE_SERVICE_KEY,
 
-        ...(options.headers || {})
-      }
-    }
-  );
+    ...(options.headers || {}),
+  },
+}
+```
 
-  const text =
-    await response.text();
+);
 
-  let data = null;
+const text = await response.text();
 
-  try {
-    data = text
-      ? JSON.parse(text)
-      : null;
-  } catch {
-    data = text;
-  }
+let data = null;
 
-  if (!response.ok) {
-    console.error(
-      "Supabase error:",
-      response.status,
-      data
-    );
+try {
+data = text ? JSON.parse(text) : null;
+} catch {
+data = text;
+}
 
-    throw new Error(
-      data?.message ||
-      data?.error_description ||
-      data?.error ||
-      "Supabase request failed"
-    );
-  }
+if (!response.ok) {
+console.error(
+"Supabase error:",
+response.status,
+data
+);
 
-  return data;
+```
+throw new Error(
+  data?.message ||
+    data?.error_description ||
+    data?.error ||
+    "Supabase request failed"
+);
+```
+
+}
+
+return data;
 }
 
 /* =========================
-   LOGIN
+LOGIN
 ========================= */
 
 app.post(
-  "/api/login",
-  (req, res) => {
-    const correct =
-      req.body.password ===
-      ADMIN_PASSWORD;
+"/api/login",
+(req, res) => {
+const correct =
+req.body &&
+req.body.password ===
+ADMIN_PASSWORD;
 
-    res.json({
-      ok: correct,
+```
+res.json({
+  ok: correct,
 
-      token:
-        correct
-          ? ADMIN_PASSWORD
-          : ""
-    });
-  }
+  token: correct
+    ? ADMIN_PASSWORD
+    : "",
+});
+```
+
+}
 );
 
 /* =========================
-   AUTH
+AUTH
 ========================= */
 
 function auth(req, res, next) {
-  const token =
-    req.headers.authorization || "";
+const token =
+req.headers.authorization || "";
 
-  if (
-    token ===
-    "Bearer " +
-    ADMIN_PASSWORD
-  ) {
-    return next();
-  }
+if (
+token ===
+"Bearer " + ADMIN_PASSWORD
+) {
+return next();
+}
 
-  return res.status(401).json({
-    error:
-      "Unauthorized"
-  });
+return res.status(401).json({
+error: "Unauthorized",
+});
 }
 
 /* =========================
-   GET SONGS
+GET SONGS
 ========================= */
 
 app.get(
-  "/api/songs",
-  async (req, res) => {
-    try {
-      const rows =
-        await supabaseRequest(
-          "/rest/v1/songs" +
-          "?select=*" +
-          "&order=created_at.desc"
-        );
+"/api/songs",
+async (req, res) => {
+try {
+const rows =
+await supabaseRequest(
+"/rest/v1/songs" +
+"?select=*" +
+"&order=created_at.desc"
+);
 
-      const songs =
-        (rows || []).map(song => ({
-          id:
-            song.id,
+```
+  const songs =
+    (rows || []).map((song) => ({
+      id: song.id,
 
-          title:
-            song.title,
+      title: song.title,
 
-          artist:
-            song.artist,
+      artist: song.artist,
 
-          audio:
-            song.audio,
+      audio: song.audio,
 
-          cover:
-            song.cover || "",
+      cover: song.cover || "",
 
-          createdAt:
-            song.created_at
-        }));
+      createdAt:
+        song.created_at,
+    }));
 
-      res.json(songs);
+  res.json(songs);
+} catch (error) {
+  console.error(
+    "GET SONGS ERROR:",
+    error
+  );
 
-    } catch (error) {
-      console.error(
-        "GET SONGS ERROR:",
-        error
-      );
+  res.status(500).json({
+    error: "Unable to load songs",
+  });
+}
+```
 
-      res.status(500).json({
-        error:
-          "Unable to load songs"
-      });
-    }
-  }
+}
 );
 
 /* =========================
-   UPLOAD SONGS
+UPLOAD SONGS
 ========================= */
 
 app.post(
-  "/api/songs",
-  auth,
-  upload.array("audio", 50),
+"/api/songs",
+auth,
+upload.array("audio", 50),
+async (req, res) => {
+try {
+if (
+!req.files ||
+req.files.length === 0
+) {
+return res.status(400).json({
+error:
+"No audio files selected",
+});
+}
 
-  async (req, res) => {
-    try {
-      if (
-        !req.files ||
-        req.files.length === 0
-      ) {
-        return res.status(400).json({
-          error:
-            "No audio files selected"
-        });
-      }
+```
+  const artist =
+    (req.body &&
+      req.body.artist) ||
+    "Various Artists";
 
-      const artist =
-        (
-          req.body &&
-          req.body.artist
-        ) ||
-        "Various Artists";
+  const uploadedSongs = [];
 
-      const uploadedSongs = [];
+  for (const file of req.files) {
+    /* =====================
+       FILE NAME
+    ===================== */
 
-      for (
-        const file
-        of req.files
-      ) {
-
-        /* FILE NAME */
-
-        const ext =
-          path
-            .extname(
-              file.originalname
-            )
-            .toLowerCase();
-
-        const baseName =
-          path
-            .parse(
-              file.originalname
-            )
-            .name
-            .replace(
-              /[^a-zA-Z0-9_-]/g,
-              "_"
-            );
-
-        const uniqueName =
-          Date.now() +
-          "-" +
-          Math.random()
-            .toString(36)
-            .slice(2) +
-          "-" +
-          baseName +
-          ext;
-
-        /* UPLOAD TO STORAGE */
-
-        await supabaseRequest(
-          "/storage/v1/object/" +
-          SUPABASE_BUCKET +
-          "/" +
-          encodeURIComponent(
-            uniqueName
-          ),
-
-          {
-            method:
-              "POST",
-
-            headers: {
-              "Content-Type":
-                file.mimetype ||
-                "audio/mpeg",
-
-              "x-upsert":
-                "false"
-            },
-
-            body:
-              file.buffer
-          }
-        );
-
-        /* PUBLIC URL */
-
-        const audioUrl =
-          SUPABASE_URL +
-          "/storage/v1/object/public/" +
-          SUPABASE_BUCKET +
-          "/" +
-          encodeURIComponent(
-            uniqueName
-          );
-
-        /* DATABASE RECORD */
-
-        const song = {
-          id:
-            Date.now()
-              .toString() +
-            "-" +
-            Math.random()
-              .toString(36)
-              .slice(2),
-
-          title:
-            path.parse(
-              file.originalname
-            ).name,
-
-          artist:
-            artist,
-
-          audio:
-            audioUrl,
-
-          cover:
-            "",
-
-          created_at:
-            new Date()
-              .toISOString()
-        };
-
-        await supabaseRequest(
-          "/rest/v1/songs",
-          {
-            method:
-              "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json",
-
-              "Prefer":
-                "return=minimal"
-            },
-
-            body:
-              JSON.stringify(song)
-          }
-        );
-
-        uploadedSongs.push({
-          id:
-            song.id,
-
-          title:
-            song.title,
-
-          artist:
-            song.artist,
-
-          audio:
-            song.audio,
-
-          cover:
-            song.cover,
-
-          createdAt:
-            song.created_at
-        });
-      }
-
-      res.json({
-        ok:
-          true,
-
-        count:
-          uploadedSongs.length,
-
-        songs:
-          uploadedSongs
-      });
-
-    } catch (error) {
-      console.error(
-        "UPLOAD ERROR:",
-        error
-      );
-
-      res.status(500).json({
-        error:
-          error.message ||
-          "Upload failed"
-      });
-    }
-  }
-);
-
-/* =========================
-   DELETE SONG
-========================= */
-
-app.delete(
-  "/api/songs/:id",
-  auth,
-
-  async (req, res) => {
-    try {
-
-      /* GET SONG */
-
-      const rows =
-        await supabaseRequest(
-          "/rest/v1/songs" +
-          "?id=eq." +
-          encodeURIComponent(
-            req.params.id
-          ) +
-          "&select=*"
-        );
-
-      if (
-        !rows ||
-        rows.length === 0
-      ) {
-        return res.status(404).json({
-          error:
-            "Song not found"
-        });
-      }
-
-      const song =
-        rows[0];
-
-      /* FIND STORAGE FILE */
-
-      let storagePath =
-        null;
-
-      const marker =
-        "/storage/v1/object/public/" +
-        SUPABASE_BUCKET +
-        "/";
-
-      if (
-        song.audio &&
-        song.audio.includes(
-          marker
+    const ext =
+      path
+        .extname(
+          file.originalname
         )
-      ) {
-        storagePath =
-          song.audio.split(
-            marker
-          )[1];
+        .toLowerCase();
 
-        storagePath =
-          decodeURIComponent(
-            storagePath
-          );
-      }
-
-      /* DELETE STORAGE */
-
-      if (storagePath) {
-        try {
-          await supabaseRequest(
-            "/storage/v1/object/" +
-            SUPABASE_BUCKET +
-            "/" +
-            encodeURIComponent(
-              storagePath
-            ),
-
-            {
-              method:
-                "DELETE"
-            }
-          );
-
-        } catch (storageError) {
-          console.error(
-            "Storage delete error:",
-            storageError
-          );
-        }
-      }
-
-      /* DELETE DATABASE ROW */
-
-      await supabaseRequest(
-        "/rest/v1/songs" +
-        "?id=eq." +
-        encodeURIComponent(
-          req.params.id
-        ),
-
-        {
-          method:
-            "DELETE"
-        }
-      );
-
-      res.json({
-        ok:
-          true
-      });
-
-    } catch (error) {
-      console.error(
-        "DELETE ERROR:",
-        error
-      );
-
-      res.status(500).json({
-        error:
-          error.message ||
-          "Delete failed"
-      });
-    }
-  }
-);
-
-/* =========================
-   ONLINE USERS
-========================= */
-
-const onlineUsers =
-  new Map();
-
-const ONLINE_TIMEOUT =
-  60 * 1000;
-
-/* REMOVE INACTIVE USERS */
-
-setInterval(
-  () => {
-    const now =
-      Date.now();
-
-    for (
-      const [
-        visitorId,
-        lastSeen
-      ]
-      of onlineUsers
-    ) {
-      if (
-        now - lastSeen >
-        ONLINE_TIMEOUT
-      ) {
-        onlineUsers.delete(
-          visitorId
+    const baseName =
+      path
+        .parse(
+          file.originalname
+        )
+        .name
+        .replace(
+          /[^a-zA-Z0-9_-]/g,
+          "_"
         );
+
+    const uniqueName =
+      Date.now() +
+      "-" +
+      Math.random()
+        .toString(36)
+        .slice(2) +
+      "-" +
+      baseName +
+      ext;
+
+    /* =====================
+       UPLOAD TO STORAGE
+    ===================== */
+
+    await supabaseRequest(
+      "/storage/v1/object/" +
+        SUPABASE_BUCKET +
+        "/" +
+        encodeURIComponent(
+          uniqueName
+        ),
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            file.mimetype ||
+            "audio/mpeg",
+
+          "x-upsert": "false",
+        },
+
+        body: file.buffer,
       }
-    }
-  },
-  30000
-);
+    );
 
-/* =========================
-   HEARTBEAT
-========================= */
+    /* =====================
+       PUBLIC URL
+    ===================== */
 
-app.post(
-  "/api/heartbeat",
-  (req, res) => {
+    const audioUrl =
+      SUPABASE_URL +
+      "/storage/v1/object/public/" +
+      SUPABASE_BUCKET +
+      "/" +
+      encodeURIComponent(
+        uniqueName
+      );
 
-    let visitorId =
-      req.body &&
-      req.body.visitorId;
+    /* =====================
+       DATABASE RECORD
+    ===================== */
 
-    if (
-      !visitorId ||
-      typeof visitorId !==
-      "string"
-    ) {
-      visitorId =
-        "visitor-" +
-        Date.now() +
+    const song = {
+      id:
+        Date.now().toString() +
         "-" +
         Math.random()
           .toString(36)
-          .slice(2);
-    }
+          .slice(2),
 
-    visitorId =
-      visitorId.slice(
-        0,
-        100
-      );
+      title:
+        path.parse(
+          file.originalname
+        ).name,
 
-    onlineUsers.set(
-      visitorId,
-      Date.now()
+      artist: artist,
+
+      audio: audioUrl,
+
+      cover: "",
+
+      created_at:
+        new Date().toISOString(),
+    };
+
+    await supabaseRequest(
+      "/rest/v1/songs",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          Prefer:
+            "return=minimal",
+        },
+
+        body: JSON.stringify(song),
+      }
     );
 
-    /* CLEAN OLD USERS */
+    uploadedSongs.push({
+      id: song.id,
 
-    const now =
-      Date.now();
+      title: song.title,
 
-    for (
-      const [
-        id,
-        lastSeen
-      ]
-      of onlineUsers
-    ) {
-      if (
-        now - lastSeen >
-        ONLINE_TIMEOUT
-      ) {
-        onlineUsers.delete(
-          id
-        );
-      }
-    }
+      artist: song.artist,
 
-    res.json({
-      ok:
-        true,
+      audio: song.audio,
 
-      online:
-        onlineUsers.size
+      cover: song.cover,
+
+      createdAt:
+        song.created_at,
     });
   }
+
+  res.json({
+    ok: true,
+
+    count:
+      uploadedSongs.length,
+
+    songs: uploadedSongs,
+  });
+} catch (error) {
+  console.error(
+    "UPLOAD ERROR:",
+    error
+  );
+
+  res.status(500).json({
+    error:
+      error.message ||
+      "Upload failed",
+  });
+}
+```
+
+}
 );
 
 /* =========================
-   STATUS
+DELETE SONG
 ========================= */
 
-app.get(
-  "/api/status",
-  (req, res) => {
+app.delete(
+"/api/songs/:id",
+auth,
+async (req, res) => {
+try {
+/* GET SONG */
 
-    const now =
-      Date.now();
+```
+  const rows =
+    await supabaseRequest(
+      "/rest/v1/songs" +
+        "?id=eq." +
+        encodeURIComponent(
+          req.params.id
+        ) +
+        "&select=*"
+    );
 
-    for (
-      const [
-        id,
-        lastSeen
-      ]
-      of onlineUsers
-    ) {
-      if (
-        now - lastSeen >
-        ONLINE_TIMEOUT
-      ) {
-        onlineUsers.delete(
-          id
-        );
-      }
-    }
-
-    res.json({
-      ok:
-        true,
-
-      service:
-        "Auto Wala",
-
-      online:
-        onlineUsers.size,
-
-      uptime:
-        process.uptime(),
-
-      time:
-        new Date()
-          .toISOString()
+  if (
+    !rows ||
+    rows.length === 0
+  ) {
+    return res.status(404).json({
+      error: "Song not found",
     });
   }
-);
 
-/* =========================
-   VISIT API
-========================= */
+  const song = rows[0];
 
-app.post(
-  "/api/visit",
-  (req, res) => {
-    res.json({
-      ok:
-        true
-    });
-  }
-);
+  /* =====================
+     FIND STORAGE FILE
+  ===================== */
 
-/* =========================
-   PLAY API
-========================= */
+  let storagePath = null;
 
-app.post(
-  "/api/play",
+  const marker =
+    "/storage/v1/object/public/" +
+    SUPABASE_BUCKET +
+    "/";
 
-  async (req, res) => {
-    try {
+  if (
+    song.audio &&
+    song.audio.includes(marker)
+  ) {
+    storagePath =
+      song.audio.split(marker)[1];
 
-      const songId =
-        req.body &&
-        req.body.songId;
-
-      if (
-        !songId ||
-        typeof songId !==
-        "string"
-      ) {
-        return res.status(400).json({
-          error:
-            "songId required"
-        });
-      }
-
-      const rows =
-        await supabaseRequest(
-          "/rest/v1/songs" +
-          "?id=eq." +
-          encodeURIComponent(
-            songId
-          ) +
-          "&select=id,title,artist"
-        );
-
-      if (
-        !rows ||
-        rows.length === 0
-      ) {
-        return res.status(404).json({
-          error:
-            "Song not found"
-        });
-      }
-
-      res.json({
-        ok:
-          true
-      });
-
-    } catch (error) {
-
-      console.error(
-        "PLAY ERROR:",
-        error
+    storagePath =
+      decodeURIComponent(
+        storagePath
       );
+  }
 
-      res.json({
-        ok:
-          false
-      });
+  /* =====================
+     DELETE STORAGE
+  ===================== */
+
+  if (storagePath) {
+    try {
+      await supabaseRequest(
+        "/storage/v1/object/" +
+          SUPABASE_BUCKET +
+          "/" +
+          encodeURIComponent(
+            storagePath
+          ),
+        {
+          method: "DELETE",
+        }
+      );
+    } catch (storageError) {
+      console.error(
+        "Storage delete error:",
+        storageError
+      );
     }
   }
+
+  /* =====================
+     DELETE DATABASE ROW
+  ===================== */
+
+  await supabaseRequest(
+    "/rest/v1/songs" +
+      "?id=eq." +
+      encodeURIComponent(
+        req.params.id
+      ),
+    {
+      method: "DELETE",
+    }
+  );
+
+  res.json({
+    ok: true,
+  });
+} catch (error) {
+  console.error(
+    "DELETE ERROR:",
+    error
+  );
+
+  res.status(500).json({
+    error:
+      error.message ||
+      "Delete failed",
+  });
+}
+```
+
+}
 );
 
 /* =========================
-   ANALYTICS
+ONLINE USERS
+========================= */
+
+const onlineUsers = new Map();
+
+const ONLINE_TIMEOUT =
+60 * 1000;
+
+/* =========================
+REMOVE INACTIVE USERS
+========================= */
+
+setInterval(() => {
+const now = Date.now();
+
+for (
+const [
+visitorId,
+lastSeen,
+] of onlineUsers
+) {
+if (
+now - lastSeen >
+ONLINE_TIMEOUT
+) {
+onlineUsers.delete(
+visitorId
+);
+}
+}
+}, 30000);
+
+/* =========================
+HEARTBEAT
+========================= */
+
+app.post(
+"/api/heartbeat",
+(req, res) => {
+let visitorId =
+req.body &&
+req.body.visitorId;
+
+```
+if (
+  !visitorId ||
+  typeof visitorId !==
+    "string"
+) {
+  visitorId =
+    "visitor-" +
+    Date.now() +
+    "-" +
+    Math.random()
+      .toString(36)
+      .slice(2);
+}
+
+visitorId =
+  visitorId.slice(0, 100);
+
+onlineUsers.set(
+  visitorId,
+  Date.now()
+);
+
+/* Clean old users */
+
+const now = Date.now();
+
+for (
+  const [
+    id,
+    lastSeen,
+  ] of onlineUsers
+) {
+  if (
+    now - lastSeen >
+    ONLINE_TIMEOUT
+  ) {
+    onlineUsers.delete(id);
+  }
+}
+
+res.json({
+  ok: true,
+
+  online:
+    onlineUsers.size,
+});
+```
+
+}
+);
+
+/* =========================
+STATUS
 ========================= */
 
 app.get(
-  "/api/analytics",
-  auth,
+"/api/status",
+(req, res) => {
+const now = Date.now();
 
-  (req, res) => {
-
-    const now =
-      Date.now();
-
-    for (
-      const [
-        id,
-        lastSeen
-      ]
-      of onlineUsers
-    ) {
-      if (
-        now - lastSeen >
-        ONLINE_TIMEOUT
-      ) {
-        onlineUsers.delete(
-          id
-        );
-      }
-    }
-
-    res.json({
-      ok:
-        true,
-
-      online:
-        onlineUsers.size,
-
-      totalVisits:
-        0,
-
-      totalPlays:
-        0
-    });
+```
+for (
+  const [
+    id,
+    lastSeen,
+  ] of onlineUsers
+) {
+  if (
+    now - lastSeen >
+    ONLINE_TIMEOUT
+  ) {
+    onlineUsers.delete(id);
   }
+}
+
+res.json({
+  ok: true,
+
+  service: "Auto Wala",
+
+  online:
+    onlineUsers.size,
+
+  uptime:
+    process.uptime(),
+
+  time:
+    new Date().toISOString(),
+});
+```
+
+}
 );
 
 /* =========================
-   ERROR HANDLER
+VISIT API
+========================= */
+
+app.post(
+"/api/visit",
+(req, res) => {
+res.json({
+ok: true,
+});
+}
+);
+
+/* =========================
+PLAY API
+========================= */
+
+app.post(
+"/api/play",
+async (req, res) => {
+try {
+const songId =
+req.body &&
+req.body.songId;
+
+```
+  if (
+    !songId ||
+    typeof songId !==
+      "string"
+  ) {
+    return res.status(400).json({
+      error: "songId required",
+    });
+  }
+
+  const rows =
+    await supabaseRequest(
+      "/rest/v1/songs" +
+        "?id=eq." +
+        encodeURIComponent(
+          songId
+        ) +
+        "&select=id,title,artist"
+    );
+
+  if (
+    !rows ||
+    rows.length === 0
+  ) {
+    return res.status(404).json({
+      error: "Song not found",
+    });
+  }
+
+  res.json({
+    ok: true,
+  });
+} catch (error) {
+  console.error(
+    "PLAY ERROR:",
+    error
+  );
+
+  res.json({
+    ok: false,
+  });
+}
+```
+
+}
+);
+
+/* =========================
+ANALYTICS
+========================= */
+
+app.get(
+"/api/analytics",
+auth,
+(req, res) => {
+const now = Date.now();
+
+```
+for (
+  const [
+    id,
+    lastSeen,
+  ] of onlineUsers
+) {
+  if (
+    now - lastSeen >
+    ONLINE_TIMEOUT
+  ) {
+    onlineUsers.delete(id);
+  }
+}
+
+res.json({
+  ok: true,
+
+  online:
+    onlineUsers.size,
+
+  totalVisits: 0,
+
+  totalPlays: 0,
+});
+```
+
+}
+);
+
+/* =========================
+ERROR HANDLER
 ========================= */
 
 app.use(
-  (
-    error,
-    req,
-    res,
-    next
-  ) => {
+(
+error,
+req,
+res,
+next
+) => {
+console.error(
+"SERVER ERROR:",
+error
+);
 
-    console.error(
-      "SERVER ERROR:",
-      error
-    );
+```
+if (
+  error instanceof
+  multer.MulterError
+) {
+  return res.status(400).json({
+    error:
+      "Upload error: " +
+      error.message,
+  });
+}
 
-    if (
-      error instanceof
-      multer.MulterError
-    ) {
-      return res.status(400).json({
-        error:
-          "Upload error: " +
-          error.message
-      });
-    }
+res.status(500).json({
+  error:
+    error.message ||
+    "Server error",
+});
+```
 
-    res.status(500).json({
-      error:
-        error.message ||
-        "Server error"
-    });
-  }
+}
 );
 
 /* =========================
-   START SERVER
+START SERVER
 ========================= */
 
 app.listen(
-  PORT,
-  () => {
+PORT,
+() => {
+console.log(
+"🚕 Auto Wala running on port " +
+PORT
+);
 
-    console.log(
-      "🚕 Auto Wala running on port " +
-      PORT
-    );
-
-    console.log(
-      "☁️ Supabase bucket: " +
-      SUPABASE_BUCKET
-    );
-  }
+```
+console.log(
+  "☁️ Supabase bucket: " +
+    SUPABASE_BUCKET
 );
 ```
+
+}
+);
