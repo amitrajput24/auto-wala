@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Wala Admin</title>
+</head>
+<body>
+  <h1>Auto Wala - Admin</h1>
 
+  <p>Admin panel is working.</p>
+
+  <input id="password" type="password" placeholder="Admin password">
+  <button onclick="login()">Login</button>
+
+  <p id="status"></p>
+
+  <script>
+    async function login() {
+      const password = document.getElementById("password").value;
+
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password })
+      });
+
+      const data = await response.json();
+
+      if (data.ok) {
+        document.getElementById("status").innerText = "Login successful!";
+        localStorage.setItem("adminToken", data.token);
+      } else {
+        document.getElementById("status").innerText = "Wrong password";
+      }
+    }
+  </script>
+</body>
+</html>
