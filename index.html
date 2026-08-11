@@ -46,7 +46,117 @@ body:before{
 }
 
 
-/* HEADER */
+/* =========================
+   LOADING SCREEN
+========================= */
+
+#loadingScreen{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    radial-gradient(circle at 50% 38%,#24527f 0%,#0b2545 45%,#071321 100%);
+
+  transition:
+    opacity .55s ease,
+    visibility .55s ease;
+}
+
+#loadingScreen.hide{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+.loaderAuto{
+  font-size:72px;
+
+  filter:
+    drop-shadow(0 12px 20px #0008);
+
+  animation:
+    loaderBounce 1s ease-in-out infinite;
+}
+
+@keyframes loaderBounce{
+  0%,100%{
+    transform:translateY(0) rotate(-2deg);
+  }
+
+  50%{
+    transform:translateY(-10px) rotate(2deg);
+  }
+}
+
+.loaderBrand{
+  margin-top:18px;
+
+  font-size:32px;
+  font-weight:1000;
+
+  letter-spacing:-1px;
+
+  text-shadow:
+    0 5px 20px #0008;
+}
+
+.loaderText{
+  margin-top:9px;
+
+  font-size:13px;
+
+  opacity:.65;
+}
+
+.loaderDots{
+  display:flex;
+  gap:5px;
+
+  margin-top:18px;
+}
+
+.loaderDots span{
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+
+  background:#fff;
+
+  animation:
+    loaderDot .8s infinite alternate;
+}
+
+.loaderDots span:nth-child(2){
+  animation-delay:.2s;
+}
+
+.loaderDots span:nth-child(3){
+  animation-delay:.4s;
+}
+
+@keyframes loaderDot{
+  from{
+    opacity:.25;
+    transform:translateY(0);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(-5px);
+  }
+}
+
+
+/* =========================
+   HEADER
+========================= */
 
 header{
   position:relative;
@@ -113,7 +223,9 @@ header{
 }
 
 
-/* HERO */
+/* =========================
+   HERO
+========================= */
 
 .heroTitle{
   text-align:center;
@@ -156,7 +268,9 @@ header{
 }
 
 
-/* AUTO */
+/* =========================
+   AUTO
+========================= */
 
 .auto{
   position:relative;
@@ -315,7 +429,9 @@ header{
 }
 
 
-/* SEARCH */
+/* =========================
+   SEARCH
+========================= */
 
 .searchBox{
   width:min(760px,92%);
@@ -382,7 +498,9 @@ header{
 }
 
 
-/* SONG SECTION */
+/* =========================
+   SONG SECTION
+========================= */
 
 .section{
   width:min(760px,92%);
@@ -416,7 +534,9 @@ header{
 }
 
 
-/* SONG CARD */
+/* =========================
+   SONG CARD
+========================= */
 
 .song{
   position:relative;
@@ -552,7 +672,9 @@ header{
 }
 
 
-/* EQUALIZER */
+/* =========================
+   EQUALIZER
+========================= */
 
 .equalizer{
   display:none;
@@ -604,7 +726,9 @@ header{
 }
 
 
-/* PLAY BUTTON */
+/* =========================
+   PLAY BUTTON
+========================= */
 
 .playBtn{
   width:42px;
@@ -644,7 +768,9 @@ header{
 }
 
 
-/* PLAYER */
+/* =========================
+   PLAYER
+========================= */
 
 .player{
   position:fixed;
@@ -768,7 +894,9 @@ audio{
 }
 
 
-/* OTHER BUTTONS */
+/* =========================
+   OTHER BUTTONS
+========================= */
 
 .horn{
   position:fixed;
@@ -831,7 +959,9 @@ audio{
 }
 
 
-/* MOBILE */
+/* =========================
+   MOBILE
+========================= */
 
 @media(max-width:600px){
 
@@ -1005,10 +1135,25 @@ audio{
     font-size:10px;
     border-radius:12px;
   }
+
+  .loaderAuto{
+    font-size:58px;
+  }
+
+  .loaderBrand{
+    font-size:27px;
+  }
+
+  .loaderText{
+    font-size:12px;
+  }
+
 }
 
 
-/* SMALL MOBILE */
+/* =========================
+   SMALL MOBILE
+========================= */
 
 @media(max-width:380px){
 
@@ -1046,14 +1191,43 @@ audio{
     width:35px!important;
     height:35px!important;
   }
-}
 
+}
 </style>
 </head>
 
 
 <body>
 
+
+<!-- =========================
+     LOADING SCREEN
+========================= -->
+
+<div id="loadingScreen">
+
+  <div class="loaderAuto">
+    🚕
+  </div>
+
+  <div class="loaderBrand">
+    ऑटो वाला
+  </div>
+
+  <div class="loaderText">
+    गाने लोड हो रहे हैं...
+  </div>
+
+  <div class="loaderDots">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+</div>
+
+
+<!-- HEADER -->
 
 <header>
 
@@ -1074,6 +1248,8 @@ audio{
 
 </header>
 
+
+<!-- HERO -->
 
 <section class="heroTitle">
 
@@ -1115,6 +1291,8 @@ audio{
 </section>
 
 
+<!-- SEARCH -->
+
 <div class="searchBox">
 
   <span class="searchIcon">
@@ -1129,6 +1307,8 @@ audio{
 
 </div>
 
+
+<!-- SONGS -->
 
 <section class="section">
 
@@ -1147,6 +1327,8 @@ audio{
 </section>
 
 
+<!-- HORN -->
+
 <button
   class="horn"
   id="horn"
@@ -1155,10 +1337,14 @@ audio{
 </button>
 
 
+<!-- ONLINE -->
+
 <div class="onlineBox">
   🟢 <span id="onlineText">Live</span>
 </div>
 
+
+<!-- PLAYER -->
 
 <div
   class="player"
@@ -1226,7 +1412,9 @@ const audio=
 document.getElementById("audio");
 
 
-/* VISITOR */
+/* =========================
+   VISITOR
+========================= */
 
 const visitorId=
 localStorage.getItem(
@@ -1247,7 +1435,9 @@ localStorage.setItem(
 );
 
 
-/* CLOCK */
+/* =========================
+   CLOCK
+========================= */
 
 function updateClock(){
 
@@ -1280,7 +1470,9 @@ setInterval(
 );
 
 
-/* ONLINE */
+/* =========================
+   ONLINE
+========================= */
 
 async function heartbeat(){
 
@@ -1337,7 +1529,9 @@ setInterval(
 );
 
 
-/* VISIT */
+/* =========================
+   VISIT
+========================= */
 
 fetch(
   "/api/visit",
@@ -1356,7 +1550,9 @@ fetch(
 ).catch(()=>{});
 
 
-/* CLEAN TITLE */
+/* =========================
+   CLEAN TITLE
+========================= */
 
 function cleanSongTitle(title){
 
@@ -1369,7 +1565,9 @@ function cleanSongTitle(title){
 }
 
 
-/* ESCAPE */
+/* =========================
+   ESCAPE
+========================= */
 
 function esc(text){
 
@@ -1391,7 +1589,30 @@ function esc(text){
 }
 
 
-/* LOAD */
+/* =========================
+   HIDE LOADING
+========================= */
+
+function hideLoading(){
+
+  const loader=
+  document.getElementById(
+    "loadingScreen"
+  );
+
+  if(!loader)
+    return;
+
+  loader.classList.add(
+    "hide"
+  );
+
+}
+
+
+/* =========================
+   LOAD SONGS
+========================= */
 
 async function load(){
 
@@ -1402,6 +1623,12 @@ async function load(){
       "/api/songs"
     );
 
+    if(!response.ok){
+      throw new Error(
+        "Songs API failed"
+      );
+    }
+
     songs=
     await response.json();
 
@@ -1409,6 +1636,17 @@ async function load(){
     [...songs];
 
     render();
+
+    /*
+      थोड़ा सा delay ताकि
+      loading animation smooth
+      लगे और अचानक गायब न हो।
+    */
+
+    setTimeout(
+      hideLoading,
+      350
+    );
 
   }catch(error){
 
@@ -1421,12 +1659,16 @@ async function load(){
       </div>
       `;
 
+    hideLoading();
+
   }
 
 }
 
 
-/* RENDER */
+/* =========================
+   RENDER
+========================= */
 
 function render(){
 
@@ -1531,7 +1773,9 @@ function render(){
 }
 
 
-/* SEARCH */
+/* =========================
+   SEARCH
+========================= */
 
 document
 .getElementById("search")
@@ -1564,7 +1808,9 @@ document
 );
 
 
-/* PLAY */
+/* =========================
+   PLAY
+========================= */
 
 async function play(i){
 
@@ -1639,7 +1885,9 @@ async function play(i){
 }
 
 
-/* TOGGLE */
+/* =========================
+   TOGGLE
+========================= */
 
 function toggle(){
 
@@ -1668,7 +1916,9 @@ function toggle(){
 }
 
 
-/* NEXT */
+/* =========================
+   NEXT
+========================= */
 
 function next(){
 
@@ -1685,7 +1935,9 @@ function next(){
 }
 
 
-/* PREVIOUS */
+/* =========================
+   PREVIOUS
+========================= */
 
 function prev(){
 
@@ -1703,7 +1955,9 @@ function prev(){
 }
 
 
-/* AUDIO */
+/* =========================
+   AUDIO EVENTS
+========================= */
 
 audio.onended=
   next;
@@ -1733,7 +1987,9 @@ audio.onpause=
   };
 
 
-/* HORN */
+/* =========================
+   HORN
+========================= */
 
 document
 .getElementById("horn")
@@ -1747,7 +2003,9 @@ document
 );
 
 
-/* START */
+/* =========================
+   START
+========================= */
 
 load();
 
