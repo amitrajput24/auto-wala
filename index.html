@@ -1746,6 +1746,54 @@ audio{
   .rideStatus{bottom:22px;font-size:11px;}
 }
 
+
+/* RIDE MODE — STEP 5: JOURNEY / RIDE COMPLETE */
+.rideJourney{
+  position:absolute;
+  left:18px;
+  top:22px;
+  z-index:7;
+  width:190px;
+  padding:12px 14px;
+  border:1px solid #ffffff1d;
+  border-radius:16px;
+  background:#07101bb5;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 12px 35px #0006,inset 0 1px #fff2;
+}
+.rideJourneyLabel{font-size:9px;letter-spacing:1.8px;opacity:.5;font-weight:800}
+.rideDestination{font-size:16px;font-weight:850;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rideJourneyMeta{display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-size:10px;opacity:.62}
+.rideProgress{height:4px;margin-top:9px;border-radius:999px;background:#ffffff12;overflow:hidden}
+.rideProgress i{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--moodGlow),var(--moodAccent));box-shadow:0 0 12px color-mix(in srgb,var(--moodAccent) 55%,transparent);transition:width .2s linear}
+.rideComplete{
+  position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+  background:#05090fd4;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;transition:opacity .35s ease;
+}
+.rideComplete.show{opacity:1;pointer-events:auto}
+.rideCompleteCard{width:min(360px,calc(100% - 34px));padding:25px 22px;text-align:center;border:1px solid #ffffff20;border-radius:24px;background:#101923e8;box-shadow:0 25px 70px #0009,inset 0 1px #fff2;transform:translateY(12px) scale(.97);transition:transform .35s ease}
+.rideComplete.show .rideCompleteCard{transform:none}
+.rideCompleteIcon{font-size:48px}
+.rideComplete h3{margin:8px 0 5px;font-size:28px}
+.rideComplete p{margin:0;opacity:.62;font-size:12px}
+.rideStats{display:flex;justify-content:center;gap:9px;margin:16px 0}
+.rideStat{min-width:92px;padding:9px;border:1px solid #ffffff12;border-radius:13px;background:#ffffff07}
+.rideStat b{display:block;font-size:15px}
+.rideStat span{font-size:9px;opacity:.5}
+.rideFinishBtn{border:0;border-radius:999px;padding:10px 18px;background:#fff;color:#111;font-weight:850;cursor:pointer}
+.rideOverlay.journeyComplete .rideAuto{animation:rideFinishBounce .65s ease both}
+@keyframes rideFinishBounce{0%{transform:translateY(18px) scale(1)}45%{transform:translateY(-8px) scale(1.08)}100%{transform:translateY(18px) scale(1)}}
+@media(max-width:600px){
+  .rideJourney{left:10px;top:15px;width:158px;padding:9px 11px}
+  .rideDestination{font-size:13px}
+  .rideJourneyMeta{font-size:9px}
+  .ridePanel{top:105px}
+  .rideCompleteCard{padding:22px 16px}
+  .rideStat{min-width:82px}
+}
+
 </style>
 </head>
 
@@ -1883,6 +1931,26 @@ audio{
   <div class="rideAuto" aria-hidden="true">🚕</div>
 
   <div class="rideStatus">🎵 Ride Mode Active • Enjoy the music</div>
+
+  <div class="rideJourney" aria-label="Current ride">
+    <div class="rideJourneyLabel">CURRENT DESTINATION</div>
+    <div class="rideDestination" id="rideDestination">India Gate</div>
+    <div class="rideJourneyMeta"><span id="rideTimer">00:00</span><span id="rideDistance">0.0 km</span></div>
+    <div class="rideProgress" aria-label="Ride progress"><i id="rideProgressFill"></i></div>
+  </div>
+
+  <div class="rideComplete" id="rideComplete" aria-hidden="true">
+    <div class="rideCompleteCard">
+      <div class="rideCompleteIcon">🏁</div>
+      <h3>Ride Complete!</h3>
+      <p id="rideCompleteText">Safar mast raha 🚕🎵</p>
+      <div class="rideStats">
+        <div class="rideStat"><b id="rideCompleteTime">00:00</b><span>RIDE TIME</span></div>
+        <div class="rideStat"><b id="rideCompleteDistance">0.0 km</b><span>DISTANCE</span></div>
+      </div>
+      <button class="rideFinishBtn" id="rideFinishBtn" type="button">Ride Again 🚕</button>
+    </div>
+  </div>
 </div>
 
 
@@ -2510,12 +2578,17 @@ const rideClose=document.getElementById("rideClose");
 
 function openRideMode(){
   rideOverlay.classList.add("open");
+  startRideJourney();
   if(!audio.paused) startRidePulse();
   rideOverlay.setAttribute("aria-hidden","false");
   document.body.style.overflow="hidden";
 }
 
 function closeRideMode(){
+  if(rideJourneyFrame){cancelAnimationFrame(rideJourneyFrame);rideJourneyFrame=null;}
+  rideComplete.classList.remove("show");
+  rideComplete.setAttribute("aria-hidden","true");
+  rideOverlay.classList.remove("journeyComplete");
   rideOverlay.classList.remove("open");
   stopRidePulse();
   rideOverlay.setAttribute("aria-hidden","true");
@@ -2701,6 +2774,88 @@ rideMoodButtons.forEach(btn=>{
 let savedRideMood="night";
 try{savedRideMood=localStorage.getItem("autoWalaRideMood")||"night"}catch(e){}
 setRideMood(savedRideMood);
+
+
+/* RIDE JOURNEY — STEP 5 */
+const rideDestination=document.getElementById("rideDestination");
+const rideTimer=document.getElementById("rideTimer");
+const rideDistance=document.getElementById("rideDistance");
+const rideProgressFill=document.getElementById("rideProgressFill");
+const rideComplete=document.getElementById("rideComplete");
+const rideCompleteTime=document.getElementById("rideCompleteTime");
+const rideCompleteDistance=document.getElementById("rideCompleteDistance");
+const rideFinishBtn=document.getElementById("rideFinishBtn");
+
+const rideDestinations=[
+  ["India Gate",3.8],["Cyber Hub",5.2],["Connaught Place",4.6],["Hauz Khas",6.1],["Marine Drive",4.3],["Chandni Chowk",3.4],["Airport Road",7.2],["Lodhi Garden",4.9]
+];
+let rideJourneyStart=0;
+let rideJourneyFrame=null;
+let rideJourneyDuration=20000;
+let rideJourneyDistance=0;
+
+function pickRideDestination(){
+  const item=rideDestinations[Math.floor(Math.random()*rideDestinations.length)];
+  rideDestination.textContent=item[0];
+  rideJourneyDistance=item[1];
+  rideDistance.textContent="0.0 km";
+}
+
+function resetRideJourney(){
+  pickRideDestination();
+  rideJourneyStart=performance.now();
+  rideTimer.textContent="00:00";
+  rideProgressFill.style.width="0%";
+  rideComplete.classList.remove("show");
+  rideComplete.setAttribute("aria-hidden","true");
+  rideOverlay.classList.remove("journeyComplete");
+}
+
+function updateRideJourney(now){
+  if(!rideOverlay.classList.contains("open")){
+    rideJourneyFrame=null;
+    return;
+  }
+
+  const elapsed=Math.max(0,now-rideJourneyStart);
+  const progress=Math.min(1,elapsed/rideJourneyDuration);
+  const seconds=Math.floor(elapsed/1000);
+  const mm=String(Math.floor(seconds/60)).padStart(2,"0");
+  const ss=String(seconds%60).padStart(2,"0");
+  const km=(rideJourneyDistance*progress).toFixed(1);
+
+  rideTimer.textContent=mm+":"+ss;
+  rideDistance.textContent=km+" km";
+  rideProgressFill.style.width=(progress*100).toFixed(1)+"%";
+
+  if(progress>=1){
+    finishRideJourney();
+    rideJourneyFrame=null;
+    return;
+  }
+
+  rideJourneyFrame=requestAnimationFrame(updateRideJourney);
+}
+
+function startRideJourney(){
+  if(rideJourneyFrame) cancelAnimationFrame(rideJourneyFrame);
+  resetRideJourney();
+  rideJourneyFrame=requestAnimationFrame(updateRideJourney);
+}
+
+function finishRideJourney(){
+  if(rideJourneyFrame){cancelAnimationFrame(rideJourneyFrame);rideJourneyFrame=null;}
+  rideOverlay.classList.add("journeyComplete");
+  rideComplete.classList.add("show");
+  rideComplete.setAttribute("aria-hidden","false");
+  rideCompleteTime.textContent=rideTimer.textContent;
+  rideCompleteDistance.textContent=rideJourneyDistance.toFixed(1)+" km";
+  rideCompleteText.textContent=""+rideDestination.textContent+" tak safar complete 🚕🎵";
+}
+
+rideFinishBtn.addEventListener("click",()=>{
+  startRideJourney();
+});
 
 /* RIDE MODE EVENTS */
 function openRideMode(){
