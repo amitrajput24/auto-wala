@@ -1294,6 +1294,88 @@ audio{
 
 
 
+/* RIDE MODE — STEP 4: RIDE MOODS */
+.rideOverlay{
+  --moodSky:#071526;
+  --moodMid:#102c45;
+  --moodBottom:#11151a;
+  --moodGlow:#4e93c5;
+  --moodAccent:#f6d86a;
+  --moodRainOpacity:0;
+  --moodTintOpacity:0;
+}
+.rideOverlay{
+  background:linear-gradient(180deg,var(--moodSky) 0%,var(--moodMid) 48%,var(--moodBottom) 100%);
+}
+.rideOverlay .rideGlow{
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--moodGlow) 22%,transparent),transparent 68%);
+}
+.rideOverlay .rideCity span{
+  background:
+    repeating-linear-gradient(90deg,transparent 0 12px,color-mix(in srgb,var(--moodAccent) 16%,transparent) 12px 16px,transparent 16px 25px),
+    repeating-linear-gradient(180deg,#ffffff0d 0 10px,transparent 10px 19px),
+    linear-gradient(180deg,#182735,#0b1118);
+}
+.rideOverlay .rideTraffic:before{
+  background:var(--moodAccent);
+  box-shadow:0 0 12px color-mix(in srgb,var(--moodAccent) 70%,transparent);
+}
+.rideOverlay .rideMoodBar{
+  position:absolute;
+  left:50%;
+  bottom:72px;
+  z-index:8;
+  transform:translateX(-50%);
+  display:flex;
+  gap:7px;
+  width:min(720px,92vw);
+  padding:8px;
+  border:1px solid #ffffff1d;
+  border-radius:18px;
+  background:#0a1018a8;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 15px 45px #0007,inset 0 1px #fff2;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.rideMoodBar::-webkit-scrollbar{display:none}
+.rideMood{
+  flex:1 0 auto;
+  min-width:92px;
+  border:1px solid #ffffff18;
+  border-radius:12px;
+  padding:8px 10px;
+  color:#fff;
+  background:#ffffff08;
+  cursor:pointer;
+  font:700 11px/1.2 system-ui,sans-serif;
+  transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.rideMood:hover{transform:translateY(-2px);background:#ffffff12}
+.rideMood.active{
+  background:#ffffff1b;
+  border-color:color-mix(in srgb,var(--moodAccent) 65%,#ffffff 15%);
+  box-shadow:0 0 18px color-mix(in srgb,var(--moodAccent) 22%,transparent);
+}
+.rideMood small{display:block;margin-top:3px;opacity:.55;font-size:9px;font-weight:600}
+.rideOverlay[data-mood="rain"] .rideSky{opacity:.2}
+.rideOverlay[data-mood="rain"]:after{
+  content:"";position:absolute;inset:-20%;z-index:3;pointer-events:none;opacity:.62;
+  background:repeating-linear-gradient(105deg,transparent 0 16px,#9fdcff33 17px,#9fdcff33 18px,transparent 19px 30px);
+  animation:rainFall .55s linear infinite;
+}
+@keyframes rainFall{to{transform:translate3d(-35px,55px,0)}}
+.rideOverlay[data-mood="love"] .rideSky{opacity:.3}
+.rideOverlay[data-mood="love"] .rideGlow{filter:blur(16px) saturate(1.35)}
+.rideOverlay[data-mood="bass"] .rideCity{filter:saturate(1.35) contrast(1.08)}
+.rideOverlay[data-mood="chill"] .rideSky{opacity:.6}
+@media(max-width:600px){
+  .rideOverlay .rideMoodBar{bottom:64px;width:calc(100% - 18px);gap:5px;padding:7px;border-radius:15px}
+  .rideMood{min-width:84px;padding:7px 8px;font-size:10px}
+  .rideMood small{font-size:8px}
+}
+
 /* RIDE MODE — STEP 3: MUSIC REACTIVE */
 .rideOverlay{
   --rideBeat:0;
@@ -1309,8 +1391,22 @@ audio{
 }
 .rideOverlay .rideAuto{
   filter:drop-shadow(0 24px 25px #0009) drop-shadow(0 0 var(--rideBeatBlur) #f6d86a66);
-  transform:translateY(calc(var(--rideBeat) * -14px)) scale(calc(1 + var(--rideBeat) * .10));
+  transform:translateY(calc(18px - (var(--rideBeat) * 30px))) scale(calc(1 + var(--rideBeat) * .10));
   transition:filter .06s linear, transform .06s linear;
+}
+
+/* Music sync must own the auto transform; otherwise the base float
+   animation overrides the beat-driven transform. */
+.rideOverlay.musicPulse .rideAuto{
+  animation:none;
+}
+
+.rideOverlay.musicPulse .rideGlow{
+  filter:brightness(calc(1 + var(--rideBeat) * .55));
+}
+
+.rideOverlay.musicPulse .rideStatus{
+  transform:scale(calc(1 + var(--rideBeat) * .025));
 }
 .rideOverlay .rideTraffic{
   opacity:var(--rideLightOpacity);
@@ -1700,8 +1796,16 @@ audio{
 
   <div class="ridePanel">
     <div class="rideEyebrow">AUTO WALA • RIDE MODE</div>
-    <h2>🚕 Safar Shuru</h2>
-    <p>Music on karo aur ride enjoy karo 🎵</p>
+    <h2 id="rideMoodTitle">🚕 Safar Shuru</h2>
+    <p id="rideMoodText">Music on karo aur ride enjoy karo 🎵</p>
+  </div>
+
+  <div class="rideMoodBar" aria-label="Ride moods">
+    <button class="rideMood active" data-mood="night" type="button">🌙 Night<small>City lights</small></button>
+    <button class="rideMood" data-mood="rain" type="button">🌧️ Rain<small>Monsoon ride</small></button>
+    <button class="rideMood" data-mood="love" type="button">❤️ Love<small>Soft vibes</small></button>
+    <button class="rideMood" data-mood="bass" type="button">🔥 Bass<small>Heavy beat</small></button>
+    <button class="rideMood" data-mood="chill" type="button">😎 Chill<small>Late night</small></button>
   </div>
 
   <button class="rideClose" id="rideClose" type="button" aria-label="Close Ride Mode">×</button>
@@ -2432,7 +2536,7 @@ function getFallbackBeat(){
   const t=(performance.now()-rideFallbackStart)/1000;
   // Strong, smooth 120 BPM visual pulse when analyser data is unavailable.
   const phase=(t*2)%1;
-  return Math.pow(Math.max(0,1-phase),3)*.82;
+  return Math.pow(Math.max(0,1-phase),2.2)*.95;
 }
 
 function updateRidePulse(){
@@ -2457,7 +2561,7 @@ function updateRidePulse(){
   rideOverlay.style.setProperty("--rideBeatBlur",(10+b*38).toFixed(1)+"px");
   rideOverlay.style.setProperty("--rideLightOpacity",(.52+b*.48).toFixed(3));
   rideOverlay.style.setProperty("--rideRoadSpeed",(1+b*.45).toFixed(3));
-  rideOverlay.classList.toggle("musicPulse",b>.035);
+  rideOverlay.classList.toggle("musicPulse",b>.012);
 
   ridePulseFrame=requestAnimationFrame(updateRidePulse);
 }
@@ -2492,6 +2596,41 @@ function stopRidePulse(){
   rideOverlay.style.setProperty("--rideRoadSpeed","1");
   rideOverlay.classList.remove("musicPulse");
 }
+
+/* RIDE MOODS — STEP 4 */
+const rideMoodButtons=document.querySelectorAll(".rideMood");
+const rideMoodTitle=document.getElementById("rideMoodTitle");
+const rideMoodText=document.getElementById("rideMoodText");
+
+const rideMoods={
+  night:{title:"🌙 Night Ride",text:"City lights, late-night safar aur music 🎵",sky:"#071526",mid:"#102c45",bottom:"#11151a",glow:"#4e93c5",accent:"#f6d86a"},
+  rain:{title:"🌧️ Rain Ride",text:"Baarish ki vibe aur window-seat wala feel ☔",sky:"#101923",mid:"#24384a",bottom:"#11161b",glow:"#72b7d8",accent:"#9fdcff"},
+  love:{title:"❤️ Love Ride",text:"Soft lights, slow ride aur dil wali vibe ❤️",sky:"#210f1b",mid:"#4b1d32",bottom:"#171016",glow:"#ff5f8a",accent:"#ff9bb8"},
+  bass:{title:"🔥 Bass Ride",text:"Beat heavy karo — road ab bass ke saath chalega 🔥",sky:"#160d08",mid:"#3d2110",bottom:"#14100c",glow:"#ff8a2a",accent:"#ffd05c"},
+  chill:{title:"😎 Chill Ride",text:"Slow city, cool lights aur pure chill mode 🌃",sky:"#07151a",mid:"#12323a",bottom:"#0b1215",glow:"#5fd4c4",accent:"#8df5dd"}
+};
+
+function setRideMood(name){
+  const mood=rideMoods[name]||rideMoods.night;
+  rideOverlay.dataset.mood=name;
+  rideOverlay.style.setProperty("--moodSky",mood.sky);
+  rideOverlay.style.setProperty("--moodMid",mood.mid);
+  rideOverlay.style.setProperty("--moodBottom",mood.bottom);
+  rideOverlay.style.setProperty("--moodGlow",mood.glow);
+  rideOverlay.style.setProperty("--moodAccent",mood.accent);
+  rideMoodTitle.textContent=mood.title;
+  rideMoodText.textContent=mood.text;
+  rideMoodButtons.forEach(btn=>btn.classList.toggle("active",btn.dataset.mood===name));
+  try{localStorage.setItem("autoWalaRideMood",name)}catch(e){}
+}
+
+rideMoodButtons.forEach(btn=>{
+  btn.addEventListener("click",()=>setRideMood(btn.dataset.mood));
+});
+
+let savedRideMood="night";
+try{savedRideMood=localStorage.getItem("autoWalaRideMood")||"night"}catch(e){}
+setRideMood(savedRideMood);
 
 /* RIDE MODE EVENTS */
 function openRideMode(){
