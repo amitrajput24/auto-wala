@@ -2792,9 +2792,6 @@ function startRideJourney(){
   rideJourneyFrame=requestAnimationFrame(updateRideJourney);
 }
 
-rideFinishBtn.addEventListener("click",()=>{
-  startRideJourney();
-});
 
 /* RIDE MODE EVENTS */
 function openRideMode(){
@@ -2826,9 +2823,6 @@ document.addEventListener("keydown",e=>{
 });
 
 /* STEP 6: final polish state */
-const rideOverlayOriginalOpen=rideOverlay.classList.contains("open");
-rideOverlay.addEventListener("transitionend",()=>{
-});
 
 </script>
 </body>
