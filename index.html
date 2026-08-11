@@ -1292,6 +1292,177 @@ audio{
   }
 }
 
+
+/* RIDE MODE — STEP 1 */
+.rideModeBtn{
+  position:relative;
+  z-index:4;
+  margin:18px auto 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 18px;
+  border:1px solid #ffffff2b;
+  border-radius:999px;
+  color:#fff;
+  background:linear-gradient(135deg,#ffffff18,#ffffff08);
+  box-shadow:0 12px 30px #0003,inset 0 1px #fff2;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.rideModeBtn:hover{
+  transform:translateY(-2px) scale(1.02);
+  border-color:#ffffff55;
+  box-shadow:0 16px 38px #0005,0 0 24px #ffffff0b,inset 0 1px #fff3;
+}
+.rideModeBtn:active{transform:scale(.97);}
+
+.rideOverlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:linear-gradient(180deg,#071526 0%,#102c45 48%,#11151a 100%);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .35s ease,visibility .35s ease;
+}
+.rideOverlay.open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.rideSky{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 18% 22%,#ffffff 0 1px,transparent 2px),
+    radial-gradient(circle at 74% 18%,#ffffffb5 0 1px,transparent 2px),
+    radial-gradient(circle at 48% 34%,#ffffff8c 0 1px,transparent 2px);
+  background-size:150px 150px,190px 190px,230px 230px;
+  opacity:.45;
+}
+.rideGlow{
+  position:absolute;
+  width:70vw;
+  height:35vw;
+  max-width:900px;
+  max-height:420px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,#4e93c51c,transparent 68%);
+  filter:blur(10px);
+}
+.rideRoad{
+  position:absolute;
+  left:-10%;
+  right:-10%;
+  bottom:-10%;
+  height:46%;
+  transform:perspective(420px) rotateX(58deg);
+  transform-origin:bottom;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 13%,#ffffff12 13.2% 13.8%,transparent 14% 26%),
+    linear-gradient(180deg,#222831,#0c0e11);
+  border-top:2px solid #ffffff0c;
+}
+.rideRoad:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-5%;
+  width:8px;
+  height:120%;
+  transform:translateX(-50%);
+  background:repeating-linear-gradient(180deg,#f6d86a 0 35px,transparent 35px 70px);
+  opacity:.75;
+  filter:drop-shadow(0 0 8px #f6d86a55);
+}
+.rideAuto{
+  position:relative;
+  z-index:3;
+  font-size:92px;
+  transform:translateY(18px);
+  filter:drop-shadow(0 24px 25px #0009);
+  animation:rideAutoFloat 1.8s ease-in-out infinite;
+}
+@keyframes rideAutoFloat{
+  0%,100%{transform:translateY(18px) rotate(-.7deg)}
+  50%{transform:translateY(8px) rotate(.7deg)}
+}
+.ridePanel{
+  position:absolute;
+  z-index:5;
+  top:28px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(520px,calc(100% - 28px));
+  text-align:center;
+}
+.rideEyebrow{
+  font-size:11px;
+  letter-spacing:3px;
+  opacity:.55;
+  font-weight:800;
+}
+.ridePanel h2{
+  margin:7px 0 4px;
+  font-size:clamp(28px,6vw,48px);
+  letter-spacing:-1px;
+}
+.ridePanel p{
+  margin:0;
+  opacity:.65;
+  font-size:13px;
+}
+.rideClose{
+  position:absolute;
+  top:18px;
+  right:18px;
+  z-index:6;
+  width:42px;
+  height:42px;
+  border:1px solid #ffffff25;
+  border-radius:50%;
+  color:#fff;
+  background:#ffffff0d;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  font-size:22px;
+  cursor:pointer;
+}
+.rideStatus{
+  position:absolute;
+  z-index:5;
+  left:50%;
+  bottom:32px;
+  transform:translateX(-50%);
+  padding:9px 14px;
+  border:1px solid #ffffff18;
+  border-radius:999px;
+  background:#0004;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  font-size:12px;
+  white-space:nowrap;
+  opacity:.8;
+}
+@media(max-width:600px){
+  .rideModeBtn{margin-top:14px;padding:11px 16px;font-size:13px;}
+  .ridePanel{top:22px;}
+  .rideAuto{font-size:70px;}
+  .rideRoad{height:40%;}
+  .rideStatus{bottom:22px;font-size:11px;}
+}
+
 </style>
 </head>
 
@@ -1996,6 +2167,34 @@ document
 /* START */
 
 load();
+
+
+
+/* RIDE MODE — STEP 1 */
+const rideModeBtn=document.getElementById("rideModeBtn");
+const rideOverlay=document.getElementById("rideOverlay");
+const rideClose=document.getElementById("rideClose");
+
+function openRideMode(){
+  rideOverlay.classList.add("open");
+  rideOverlay.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+}
+
+function closeRideMode(){
+  rideOverlay.classList.remove("open");
+  rideOverlay.setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+}
+
+rideModeBtn.addEventListener("click",openRideMode);
+rideClose.addEventListener("click",closeRideMode);
+rideOverlay.addEventListener("click",e=>{
+  if(e.target===rideOverlay) closeRideMode();
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && rideOverlay.classList.contains("open")) closeRideMode();
+});
 
 </script>
 
